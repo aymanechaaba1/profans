@@ -2,7 +2,7 @@ import twilio from 'twilio';
 
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_TOKEN; // secret key
-export const verifySid = 'VAebe1a38ec48b7b0541cea274c75392e9';
+export const verifySid = process.env.TWILIO_VERIFY_SID;
 
 const client = twilio(accountSid, authToken);
 
