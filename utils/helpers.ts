@@ -1,10 +1,6 @@
-import { JWTPayload } from 'jose';
 import { MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
-import { validJWT } from '@/middleware';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,13 +21,6 @@ export async function getCities() {
 
   const data: MoroccanCitiesResponse = await res.json();
   return data;
-}
-
-export const AUTH_SECRET = 'PelB28zt6umH8KoSiWaxV5q0B9E49ocUdoJlLPixHSw=';
-export function generateJWT(id: string, expiresIn?: number) {
-  return jwt.sign({ id }, AUTH_SECRET, {
-    expiresIn,
-  });
 }
 
 export const getFirstLetters = (...names: string[]) =>

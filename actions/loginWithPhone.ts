@@ -3,7 +3,6 @@
 import db from '@/drizzle/seed';
 import client, { verifySid } from '@/lib/twilio';
 import { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verification';
-import { VerificationCheckInstance } from 'twilio/lib/rest/verify/v2/service/verificationCheck';
 import { z } from 'zod';
 
 const emailFormSchema = z.object({

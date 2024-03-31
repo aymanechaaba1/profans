@@ -1,14 +1,13 @@
 import LoginForm from '@/components/LoginForm';
-import { cn } from '@/utils/helpers';
+import { sql } from '@/drizzle/seed';
 import { Metadata } from 'next';
-import { useState } from 'react';
 
 export const metadata: Metadata = {
   title: 'Login to Tadakir.net Clone',
   description: 'Login to your account',
 };
 
-function LoginPage() {
+async function LoginPage() {
   return (
     <>
       <LoginForm />

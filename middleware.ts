@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
-import { AUTH_SECRET } from './utils/helpers';
 
 const publicRoutes = ['/', '/login', '/register'];
 
@@ -9,7 +8,7 @@ export async function validJWT(token: string) {
   try {
     const { payload } = await jwtVerify(
       token,
-      new TextEncoder().encode(AUTH_SECRET)
+      new TextEncoder().encode(process.env.AUTH_SECRET)
     );
     return payload;
   } catch (err) {

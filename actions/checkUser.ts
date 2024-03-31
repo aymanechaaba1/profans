@@ -1,6 +1,5 @@
 'use server';
 
-import { users } from '@/drizzle/schema';
 import db from '@/drizzle/seed';
 
 export async function checkUser(email: string) {

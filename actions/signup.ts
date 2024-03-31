@@ -2,9 +2,10 @@
 
 import { users } from '@/drizzle/schema';
 import db from '@/drizzle/seed';
-import { generateJWT, getCities } from '@/utils/helpers';
+import { getCities } from '@/utils/helpers';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
+import { generateJWT } from './generateJWT';
 
 const UserSchema = z.object({
   id: z.string().optional(),
@@ -78,7 +79,7 @@ export async function signup(
 
     // generate jwt
     let expiresIn = 24 * 60 * 60; // 3 days in s
-    const jwt = generateJWT(newUser[0].id, expiresIn);
+    const jwt = await generateJWT(newUser[0].id, expiresIn);
     cookies().set('jwt', jwt, {
       httpOnly: true,
       maxAge: expiresIn * 1000, // in ms

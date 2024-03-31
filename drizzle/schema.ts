@@ -1,6 +1,4 @@
 import {
-  boolean,
-  date,
   numeric,
   pgEnum,
   pgTable,
