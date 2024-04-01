@@ -1,9 +1,9 @@
 'use server';
 
 import db from '@/drizzle/seed';
-import { validJWT } from '@/middleware';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { validJWT } from './validJWT';
 
 export async function getSession() {
   const token = cookies().get('jwt')?.value;
