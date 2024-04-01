@@ -3,8 +3,8 @@
 import { cn } from '@/utils/helpers';
 import { SignUpFormState } from './SignUpForm';
 import useSWR from 'swr';
-import { Loader } from 'lucide-react';
-import { RestCountry } from '@/types/rest-countries';
+import { Loader, Loader2 } from 'lucide-react';
+import { Idd, RestCountry } from '@/types/rest-countries';
 import { Label } from './ui/label';
 import {
   Select,
@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { MapboxReverseGeocodingData } from '@/types/mapbox';
 
 function PhoneNumberInput({
   state,
@@ -27,8 +29,36 @@ function PhoneNumberInput({
     error,
     isLoading,
   } = useSWR<RestCountry[], any>('https://restcountries.com/v3.1/all', fetcher);
+  const [country, setCountry] = useState<string>('');
+  const [idd, setIdd] = useState<Idd | undefined>(undefined);
 
-  let morocco = countries?.find((country) => country.flag === '🇲🇦');
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(onSuccess, onError);
+
+    let currentCountryIdd = countries?.find(
+      (c) => c.name.common.toLowerCase() === country
+    )?.idd;
+    setIdd(currentCountryIdd);
+  }, [countries, country]);
+
+  function onSuccess(pos: GeolocationPosition) {
+    let {
+      coords: { latitude, longitude },
+    } = pos;
+
+    fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_KEY}&types=country`
+    )
+      .then((res) => res.json())
+      .then((data: MapboxReverseGeocodingData) => {
+        console.log(data);
+        setCountry(data.features[0].place_name.toLowerCase());
+      });
+  }
+
+  function onError() {
+    toast('location rejected');
+  }
 
   if (error) return toast('something went wrong!');
 
@@ -40,13 +70,10 @@ function PhoneNumberInput({
           'border border-red-500': state?.errors?.birthdate,
         })}
       >
-        {isLoading && <Loader className="animate-spin" size={15} />}
+        {isLoading && <Loader2 className="animate-spin" size={15} />}
         {countries && (
-          <>
-            <Select
-              name="calling_code"
-              defaultValue={`${morocco?.idd.root}${morocco?.idd.suffixes?.[0]}`}
-            >
+          <div className="flex items-center gap-x-4">
+            <Select name="calling_code" defaultValue={`+212`}>
               <SelectTrigger className="">
                 <SelectValue placeholder="Select your country" />
               </SelectTrigger>
@@ -57,7 +84,6 @@ function PhoneNumberInput({
                     country.idd.suffixes?.[0] && (
                       <SelectItem
                         key={i}
-                        className="flex"
                         value={`${country.idd.root}${country.idd.suffixes?.[0]}`}
                       >
                         {`${country.idd.root}${country.idd.suffixes?.[0]}`}
@@ -70,10 +96,12 @@ function PhoneNumberInput({
               type="phone"
               name="phone"
               autoComplete="off"
-              className="outline-none bg-transparent flex-1"
+              className={cn('outline-none bg-transparent flex-1', {
+                'border-red-500': state?.errors?.phone,
+              })}
               placeholder="615875849"
             />
-          </>
+          </div>
         )}
       </div>
     </>

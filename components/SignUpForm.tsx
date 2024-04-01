@@ -22,6 +22,8 @@ import { Label } from './ui/label';
 import { useTimer } from 'react-timer-hook';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
+import { checkUser } from '@/actions/checkUser';
+import { validateEmail } from '@/actions/validateEmail';
 
 export type SignUpFormState = {
   ok: boolean;
@@ -53,21 +55,20 @@ const initState: SignUpFormState = {
   },
 };
 
-function SendOtpSubmitBtn({
-  handler,
-}: {
-  handler: MouseEventHandler<HTMLButtonElement>;
-}) {
+function SendOtpSubmitBtn() {
   const { pending } = useFormStatus();
 
   return (
     <button
       type="submit"
       disabled={pending}
-      onClick={handler}
-      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg"
+      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg flex justify-center"
     >
-      {pending ? 'sending otp...' : 'next'}
+      {pending ? (
+        <Loader2 className="animate-spin my-1" size={15} color="white" />
+      ) : (
+        'next'
+      )}
     </button>
   );
 }
@@ -145,62 +146,48 @@ function SignUpForm() {
     setCities(data.results);
   }
 
-  async function userExits(email: string) {
-    const user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, email),
-    });
+  async function emailFormHandler(email: string) {
+    const validEmail = await validateEmail(email);
+    if (!validEmail) return toast('invalid email');
 
-    return !!user?.email;
-  }
+    setValidEmail(true);
 
-  async function emailFormHandler(
-    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
-  ) {
-    e.preventDefault();
-    let emailFormSchema = z.object({
-      email: z.string().email(),
-    });
+    try {
+      // check if new user
+      const user = await checkUser(email);
+      if (user) return toast('user already exists');
 
-    let result = emailFormSchema.safeParse({ email });
-
-    if (!result.success) {
-      setValidEmail(false);
-    } else {
-      setValidEmail(true);
-      let { email } = result.data;
-
-      try {
-        // check if new user
-        const user = await userExits(email);
-
-        if (user) return toast('user already exists');
-
-        // send otp
-        const sendingResult = await sendOtp(email);
-        if (sendingResult?.messageId) {
-          setSentOtp(sendingResult.otp);
-          setShowOTPInput(true);
-          setShowTimer(true);
-        }
-
-        // start timer
-        start();
-        setTries((prevTry) => prevTry + 1);
-      } catch (err) {
-        console.log(err);
-        return '';
+      // send otp
+      const sendingResult = await sendOtp(email);
+      if (sendingResult?.messageId) {
+        setSentOtp(sendingResult.otp);
+        setShowOTPInput(true);
+        setShowTimer(true);
       }
+
+      // start timer
+      start();
+      setTries((prevTry) => prevTry + 1);
+    } catch (err) {
+      console.log(err);
+      return '';
     }
   }
 
   return (
     <div className="">
-      <form className="grid grid-cols-2 items-center my-5 space-y-4">
+      <form
+        action={async (formData) => {
+          let email = formData.get('email') as string;
+          emailFormHandler(email);
+          setEmail(email);
+        }}
+        className="grid grid-cols-2 items-center my-5 space-y-4"
+      >
         <Label htmlFor="email">email</Label>
         <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="email"
           autoComplete="off"
           className={cn('border rounded-lg py-1 px-3', {
             'border-red-500': validEmail === false,
@@ -266,7 +253,7 @@ function SignUpForm() {
             )}
           </div>
         )}
-        {!validOtp && <SendOtpSubmitBtn handler={emailFormHandler} />}
+        {!validOtp && <SendOtpSubmitBtn />}
       </form>
       {validOtp && (
         <form
@@ -280,7 +267,7 @@ function SignUpForm() {
           <select
             name="gender"
             className={cn(`border py-1 px-3 rounded-lg`, {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.gender,
             })}
           >
             <option value="" disabled>
@@ -295,7 +282,7 @@ function SignUpForm() {
             name="firstname"
             autoComplete="off"
             className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.firstname,
             })}
           />
           <Label htmlFor="lastname">lastname</Label>
@@ -304,7 +291,7 @@ function SignUpForm() {
             name="lastname"
             autoComplete="off"
             className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.lastname,
             })}
           />
           <Label htmlFor="cin">cin</Label>
@@ -313,7 +300,7 @@ function SignUpForm() {
             name="cin"
             autoComplete="off"
             className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.cin,
             })}
           />
           <Label htmlFor="birthdate">birthdate</Label>
@@ -321,14 +308,14 @@ function SignUpForm() {
             type="date"
             name="birthdate"
             className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.birthdate,
             })}
           />
           <Label htmlFor="city">city</Label>
           <select
             name="city"
             className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': false,
+              'border border-red-500': formState?.errors?.city,
             })}
           >
             <option value="" disabled>
@@ -340,12 +327,12 @@ function SignUpForm() {
               </option>
             ))}
           </select>
-          <PhoneNumberInput state={undefined} />
+          <PhoneNumberInput state={formState} />
           <SignupSubmitBtn isRunning={isRunning} />
         </form>
       )}
       <p className="mt-4 text-sm col-span-2">
-        already have an account,{' '}
+        already have an account,
         <Link href={'/login'} className="font-bold">
           login!
         </Link>

@@ -18,7 +18,7 @@ import { setJWT } from '@/actions/setJWT';
 import { checkUser } from '@/actions/checkUser';
 import { validateEmail } from '@/actions/validateEmail';
 import { useFormStatus } from 'react-dom';
-import { Loader, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 export type LoginFormState = {
   ok: boolean;
@@ -39,7 +39,7 @@ function LoginSubmitButton() {
       disabled={pending}
     >
       {pending ? (
-        <Loader2 className="animate-spin my-2" size={15} color="white" />
+        <Loader2 className="animate-spin" size={15} color="white" />
       ) : (
         'login'
       )}

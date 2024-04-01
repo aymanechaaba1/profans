@@ -22,9 +22,3 @@ export const users = pgTable('users', {
   phone: text('phone').unique().notNull(),
   email: text('email').unique().notNull(),
 });
-
-export const tokens = pgTable('tokens', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  email: text('email').unique().notNull(),
-  otp: numeric('token').notNull(),
-});

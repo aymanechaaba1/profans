@@ -41,7 +41,7 @@ export async function loginWithPhone(formData: FormData) {
 
     // send sms verification code
     const verification = await client.verify.v2
-      .services(verifySid)
+      .services(verifySid!)
       .verifications.create({ to: phone, channel: 'sms' });
     verificationStatus = verification;
   } catch (err) {

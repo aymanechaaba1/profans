@@ -27,12 +27,12 @@ export async function middleware(request: NextRequest) {
   if (loggedIn) {
     if (url.pathname === '/login' || url.pathname === '/register')
       return NextResponse.redirect(new URL('/', request.url));
-  } else {
-    // if user is not logged in and tries to go to a non-public route, redirects him to /login
-    if (!publicRoutes.includes(url.pathname)) {
-      if (url.pathname !== '/login')
-        return NextResponse.redirect(new URL('/login', request.url));
-    }
+  }
+
+  // if user is not logged in and tries to go to a non-public route, redirects him to /login
+  if (!publicRoutes.includes(url.pathname)) {
+    if (url.pathname !== '/login')
+      return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return NextResponse.next();

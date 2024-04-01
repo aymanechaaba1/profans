@@ -44,7 +44,10 @@ async function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>
-                {session?.user?.firstname} {session?.user?.lastname}
+                <p>
+                  {session?.user?.firstname} {session?.user?.lastname}
+                </p>
+                <p className="text-xs text-gray-500">{session.user.email}</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>

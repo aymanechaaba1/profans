@@ -50,7 +50,10 @@ export async function signup(
 
   if (!result.success) {
     console.log(result.error.flatten().fieldErrors);
-    return;
+    return {
+      ok: false,
+      errors: result.error.flatten().fieldErrors,
+    };
   }
 
   try {
@@ -78,11 +81,11 @@ export async function signup(
       .returning();
 
     // generate jwt
-    let expiresIn = 24 * 60 * 60; // 3 days in s
+    let expiresIn = 24 * 60 * 60; // one day in s
     const jwt = await generateJWT(newUser[0].id, expiresIn);
     cookies().set('jwt', jwt, {
       httpOnly: true,
-      maxAge: expiresIn * 1000, // in ms
+      maxAge: expiresIn * 1000, // one day in ms
     });
 
     return {

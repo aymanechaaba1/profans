@@ -15,7 +15,7 @@ export async function sendOtp(
     host: 'smtp.gmail.com',
     auth: {
       user: 'aymanechaaba1@gmail.com',
-      pass: process.env.NODEMAILER_PASS, // secret key
+      pass: process.env.NODEMAILER_PASS || 'ozvo hrxc eahj rgeg', // secret key
     },
   });
 
@@ -33,6 +33,4 @@ export async function sendOtp(
     console.log(err);
     return undefined;
   }
-
-  console.log('otp sent');
 }
