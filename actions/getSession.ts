@@ -1,6 +1,6 @@
 'use server';
 
-import db, { sql } from '@/drizzle/seed';
+import db from '@/drizzle/seed';
 import { validJWT } from '@/middleware';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
