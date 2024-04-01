@@ -1,5 +1,4 @@
 import SignUpForm from '@/components/SignUpForm';
-import { sql } from '@/drizzle/seed';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,9 +7,6 @@ export const metadata: Metadata = {
 };
 
 async function RegisterPage() {
-  const [helloSql] = await sql(`SELECT NOW();`);
-  console.log('register-page', helloSql);
-
   return (
     <>
       <SignUpForm />
