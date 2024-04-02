@@ -18,7 +18,7 @@ async function Header() {
   const session = await getSession();
   let user;
 
-  if (session)
+  if (session && session.id)
     user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, session.id),
     });

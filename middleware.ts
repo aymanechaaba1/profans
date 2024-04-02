@@ -7,7 +7,9 @@ const publicRoutes = ['/', '/login', '/register'];
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const token = request.cookies.get('jwt')?.value;
-  const payload = await verifyJWT(token!);
+  if (!token) return;
+
+  const payload = await verifyJWT(token);
 
   const loggedIn = !!token && !!payload;
 
