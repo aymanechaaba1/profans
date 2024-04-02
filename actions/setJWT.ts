@@ -1,10 +1,10 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { generateJWT } from './generateJWT';
+import { signJWT } from './signJWT';
 
 export async function setJWT(id: string, expiresIn: number) {
-  const jwt = await generateJWT(id, expiresIn);
+  const jwt = await signJWT(id, expiresIn);
   cookies().set('jwt', jwt, {
     httpOnly: true,
     maxAge: expiresIn * 1000, // in ms

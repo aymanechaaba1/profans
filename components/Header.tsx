@@ -17,8 +17,7 @@ import { users } from '@/drizzle/schema';
 import { sql } from '@vercel/postgres';
 
 async function Header() {
-  const { rows } = await sql`SELECT * FROM users`;
-  console.log(rows);
+  const session = await getSession();
 
   return (
     <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -36,7 +35,7 @@ async function Header() {
         </nav>
         {/* login and signup btns if user is not logged in */}
         {/* else display avatar */}
-        {/* {session && session.user ? (
+        {session && session.user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {session.user.firstname && session.user.lastname && (
@@ -74,7 +73,7 @@ async function Header() {
               signup
             </Link>
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );

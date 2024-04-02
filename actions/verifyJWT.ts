@@ -2,7 +2,7 @@
 
 import { jwtVerify } from 'jose';
 
-export async function validJWT(token: string) {
+export async function verifyJWT(token: string) {
   try {
     const { payload } = await jwtVerify(
       token,

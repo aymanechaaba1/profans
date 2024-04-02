@@ -5,7 +5,7 @@ import db from '@/drizzle/seed';
 import { getCities } from '@/utils/helpers';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
-import { generateJWT } from './generateJWT';
+import { signJWT } from './signJWT';
 
 const UserSchema = z.object({
   id: z.string().optional(),
@@ -82,7 +82,7 @@ export async function signup(
 
     // generate jwt
     let expiresIn = 24 * 60 * 60; // one day in s
-    const jwt = await generateJWT(newUser[0].id, expiresIn);
+    const jwt = await signJWT(newUser[0].id, expiresIn);
     cookies().set('jwt', jwt, {
       httpOnly: true,
       maxAge: expiresIn * 1000, // one day in ms

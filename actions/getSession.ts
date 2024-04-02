@@ -1,22 +1,26 @@
 'use server';
 
-import db from '@/drizzle/seed';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { validJWT } from './validJWT';
-import { sql } from '@vercel/postgres';
+import { verifyJWT } from './verifyJWT';
+import { NextResponse } from 'next/server';
+import db from '@/drizzle/seed';
 
 export async function getSession() {
   const token = cookies().get('jwt')?.value;
+  if (!token) return;
 
   try {
-    const payload = await validJWT(token!);
-    if (!payload) return redirect('/login');
+    const payload = await verifyJWT(token);
+    if (!payload?.id) return;
 
-    const user = await sql`SELECT * FROM users WHERE users.id = ${payload.id}`;
+    const user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, payload.id),
+    });
 
     return { user };
   } catch (err) {
-    console.log(err);
+    NextResponse.next();
+    console.log('session-error', err);
   }
 }

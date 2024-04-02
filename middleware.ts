@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
-import { validJWT } from './actions/validJWT';
+import { verifyJWT } from './actions/verifyJWT';
 
 const publicRoutes = ['/', '/login', '/register'];
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const token = request.cookies.get('jwt')?.value;
-  const payload = await validJWT(token!);
+  const payload = await verifyJWT(token!);
 
   const loggedIn = !!token && !!payload;
 
