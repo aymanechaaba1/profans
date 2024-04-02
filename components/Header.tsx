@@ -12,10 +12,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
 import db from '@/drizzle/seed';
-import { users } from '@/drizzle/schema';
-import { sql } from '@vercel/postgres';
+import { getSession } from '@/actions/getSession';
 
 async function Header() {
+  const session = await getSession();
+  let user;
+
+  if (session)
+    user = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, session.id),
+    });
+
   return (
     <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 max-w-screen-2xl items-center container gap-x-4">
@@ -32,22 +39,19 @@ async function Header() {
         </nav>
         {/* login and signup btns if user is not logged in */}
         {/* else display avatar */}
-        {/* {session && session.user ? (
+        {session && user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {session.user.firstname && session.user.lastname && (
-                <Avatar
-                  firstname={session.user.firstname}
-                  lastname={session.user.lastname}
-                />
+              {user.firstname && user.lastname && (
+                <Avatar firstname={user.firstname} lastname={user.lastname} />
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
               <DropdownMenuLabel>
                 <p>
-                  {session?.user?.firstname} {session?.user?.lastname}
+                  {user?.firstname} {user?.lastname}
                 </p>
-                <p className="text-xs text-gray-500">{session.user.email}</p>
+                <p className="text-xs text-gray-500">{user.email}</p>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
@@ -70,7 +74,7 @@ async function Header() {
               signup
             </Link>
           </div>
-        )} */}
+        )}
       </div>
     </div>
   );
