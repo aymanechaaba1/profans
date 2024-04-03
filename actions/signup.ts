@@ -84,7 +84,6 @@ export async function signup(
     // generate jwt
     let expiresIn = 60 * 60; // one day in s
     const jwt = await signJWT(newUser[0].id);
-    console.log(jwt);
     if (!jwt) return;
 
     cookies().set('jwt', jwt, {
