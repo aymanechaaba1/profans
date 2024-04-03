@@ -1,5 +1,5 @@
 {
-  "id": "cf9f2e53-2f25-4f7c-9dcb-d7e19bf30ef8",
+  "id": "411816f1-38ff-4864-a40b-f09abf5030b4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -17,14 +17,14 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
@@ -55,7 +55,7 @@
         },
         "birthdate": {
           "name": "birthdate",
-          "type": "date",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
@@ -78,7 +78,15 @@
           "notNull": true
         }
       },
-      "indexes": {},
+      "indexes": {
+        "unique_idx": {
+          "name": "unique_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {

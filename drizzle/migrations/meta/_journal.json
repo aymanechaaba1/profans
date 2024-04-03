@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711459287569,
-      "tag": "0000_uneven_the_liberteens",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1711527669152,
-      "tag": "0001_even_speed_demon",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1711902857356,
-      "tag": "0002_wild_hannibal_king",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1711902871217,
-      "tag": "0003_fast_nocturne",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1711973862796,
-      "tag": "0004_majestic_viper",
+      "when": 1712152372712,
+      "tag": "0000_slim_warbird",
       "breakpoints": true
     }
   ]

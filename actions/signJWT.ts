@@ -1,9 +1,18 @@
 'use server';
 
-import jwt from 'jsonwebtoken';
+import { alg, key } from '@/utils/config';
+import { SignJWT } from 'jose';
 
-export async function signJWT(id: string, expiresIn?: number) {
-  return jwt.sign({ id }, process.env.AUTH_SECRET!, {
-    expiresIn,
-  });
+export async function signJWT(id: string) {
+  try {
+    const jwt = await new SignJWT({ id })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('2h')
+      .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
+
+    return jwt;
+  } catch (err) {
+    console.log(err);
+  }
 }

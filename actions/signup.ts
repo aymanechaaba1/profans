@@ -6,6 +6,7 @@ import { getCities } from '@/utils/helpers';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 import { signJWT } from './signJWT';
+import { NextResponse } from 'next/server';
 
 const UserSchema = z.object({
   id: z.string().optional(),
@@ -81,8 +82,11 @@ export async function signup(
       .returning();
 
     // generate jwt
-    let expiresIn = 24 * 60 * 60; // one day in s
-    const jwt = await signJWT(newUser[0].id, expiresIn);
+    let expiresIn = 60 * 60; // one day in s
+    const jwt = await signJWT(newUser[0].id);
+    console.log(jwt);
+    if (!jwt) return;
+
     cookies().set('jwt', jwt, {
       httpOnly: true,
       maxAge: expiresIn * 1000, // one day in ms
