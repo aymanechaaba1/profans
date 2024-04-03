@@ -20,7 +20,7 @@ async function Header() {
 
   if (session && session.id)
     user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, session.id),
+      where: (users, { eq }) => eq(users.id, session.id as string),
     });
 
   return (
