@@ -53,6 +53,12 @@ async function Header() {
                 </p>
                 <p className="text-xs text-gray-500">{user.email}</p>
               </DropdownMenuLabel>
+              <DropdownMenuItem>
+                <Link href={`/account/profile`}>profile</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link href={`/my-tickets`}>my tickets</Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <LogOut className="mr-2 h-4 w-4" />
