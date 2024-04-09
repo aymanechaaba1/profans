@@ -52,6 +52,9 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
   });
   const [quantity, setQuantity] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [ticket, setTicket] =
+    useState<Awaited<ReturnType<typeof getTicket>>>(undefined);
 
   let time = new Date();
   let timeLeft = event.time.getTime() - Date.now();
@@ -105,38 +108,25 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
 
     try {
       const ticket = await getTicket(event.id, selectedOption.id);
-
       if (!user) return toast('no user found');
       if (!ticket) return toast('no ticket found');
-      if (!ticket.stock) return toast('tickets sold out');
 
+      if (!ticket.stock) return toast('tickets sold out');
       let newCartItem: typeof cartItems.$inferInsert = {
         quantity,
         cartId: user.cart.id,
         ticketId: ticket.id,
       };
-
       const userTicketCart = await getCart(user.cart.id, ticket.id);
-
       if (userTicketCart?.items.length === 3)
         return toast("you can't add more than 3 tickets");
-
       // check if ticket exists in the users' cart items
       setIsLoading(true);
-
       const cartIt = await getCartItemByTicketId(ticket.id);
-
       if (cartIt) {
         // update quantity
         await updateCartQuantity(quantity + cartIt.quantity, cartIt.id);
-        toast('quantity updated!', {
-          action: {
-            label: 'cart',
-            onClick: () => {
-              router.replace('/cart');
-            },
-          },
-        });
+        toast('quantity updated!');
       } else {
         const cartItem = await addCartItem(newCartItem);
         toast('new cart item added', {
@@ -149,6 +139,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
         });
       }
       setIsLoading(false);
+      setShowDialog(false);
     } catch (err) {
       console.log(err);
     }
@@ -185,7 +176,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
             </p>
           </div>
           <div className="flex justify-between items-end">
-            <Dialog>
+            <Dialog onOpenChange={setShowDialog} open={showDialog}>
               <DialogTrigger asChild>
                 <Button className="text-sm tracking-tight scroll-m-20 mt-4">
                   Buy Ticket
