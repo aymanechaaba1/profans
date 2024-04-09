@@ -15,7 +15,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { z } from 'zod';
 import { sendOtp } from '@/actions/sendOtp';
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { Label } from './ui/label';

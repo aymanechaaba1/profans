@@ -25,3 +25,32 @@ export async function getCities() {
 
 export const getFirstLetters = (...names: string[]) =>
   names.map((name) => name[0].toUpperCase()).join('');
+
+export async function getTeams() {
+  const url = 'https://api-football-v1.p.rapidapi.com/v2/teams/league/2';
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': '4ef091339bmsh01863cf3bb48f49p191d37jsnab835b4f8447',
+      'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com',
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function simulateLongTask(duration: number) {
+  return new Promise((resolve) => setTimeout(resolve, duration));
+}
+
+export const formatPrice = (price: number, currency: string = 'USD') =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  }).format(price);

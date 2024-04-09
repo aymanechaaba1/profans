@@ -8,6 +8,111 @@
       "when": 1712152372712,
       "tag": "0000_slim_warbird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1712322617840,
+      "tag": "0001_useful_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712322813159,
+      "tag": "0002_overrated_kat_farrell",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1712323683051,
+      "tag": "0003_big_tarot",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1712353574409,
+      "tag": "0004_marvelous_ulik",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1712354057036,
+      "tag": "0005_zippy_dreaming_celestial",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1712355338923,
+      "tag": "0006_talented_ulik",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1712355756051,
+      "tag": "0007_long_sue_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1712418830096,
+      "tag": "0008_natural_blink",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1712498282046,
+      "tag": "0009_wooden_aaron_stack",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1712521390423,
+      "tag": "0010_violet_baron_zemo",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1712522442850,
+      "tag": "0011_solid_fixer",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1712522483369,
+      "tag": "0012_absurd_darkhawk",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1712522845449,
+      "tag": "0013_long_stature",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1712597483289,
+      "tag": "0014_marvelous_stark_industries",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "5",
+      "when": 1712598543226,
+      "tag": "0015_green_human_robot",
+      "breakpoints": true
     }
   ]
 }

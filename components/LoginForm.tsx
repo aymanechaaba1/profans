@@ -19,6 +19,7 @@ import { checkUser } from '@/actions/checkUser';
 import { validateEmail } from '@/actions/validateEmail';
 import { useFormStatus } from 'react-dom';
 import { Loader2 } from 'lucide-react';
+import { Button } from './ui/button';
 
 export type LoginFormState = {
   ok: boolean;
@@ -33,9 +34,9 @@ function LoginSubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
-      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg mt-4 flex justify-center"
+      className="col-span-2 text-white py-2 rounded-lg mt-4 flex justify-center"
       disabled={pending}
     >
       {pending ? (
@@ -43,7 +44,7 @@ function LoginSubmitButton() {
       ) : (
         'login'
       )}
-    </button>
+    </Button>
   );
 }
 

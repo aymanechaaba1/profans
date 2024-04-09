@@ -74,3 +74,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+.typography {
+  @apply scroll-m-20 tracking-tight;
+}
+
+.paragraph {
+  @apply leading-7 [&:not(:first-child)]:mt-6;
+}
+
+.lead {
+  @apply text-muted-foreground;
+}
+
+.large {
+  @apply text-lg font-semibold;
+}
+
+.small {
+  @apply text-sm font-medium leading-none;
+}
+
+.muted {
+  @apply text-sm text-muted-foreground;
+}

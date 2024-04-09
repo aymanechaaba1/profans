@@ -1,6 +1,6 @@
 'use server';
 
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 
 async function getUserByEmail(email: string) {
   const user = await db.query.users.findFirst({
