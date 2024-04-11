@@ -237,7 +237,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
             </p>
           </div>
           <div className="flex justify-between items-end mt-4">
-            {true && (
+            {!expiredEvent && (
               <Dialog onOpenChange={setShowDialog} open={showDialog}>
                 <DialogTrigger asChild>
                   <Button className="text-sm tracking-tight scroll-m-20 mt-4">
