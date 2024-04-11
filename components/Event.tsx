@@ -3,7 +3,7 @@
 import { cartItems, eventOptions, events } from '@/drizzle/schema';
 import { cn, formatPrice, getTeams, simulateLongTask } from '@/utils/helpers';
 import Image from 'next/image';
-import { ElementRef, MouseEvent, useEffect, useState } from 'react';
+import { ElementRef, MouseEvent, use, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Link from 'next/link';
 import { ExternalLink, Loader2 } from 'lucide-react';
@@ -37,6 +37,8 @@ import { getCart } from '@/actions/getCart';
 import { getCartItemByTicketId } from '@/actions/getCartItemByTicketId';
 import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { useRouter } from 'next/navigation';
+import { TICKETS_LIMIT } from '@/utils/config';
+import { getEventOptionsTickets } from '@/actions/getEventOptionsTickets';
 
 function Event({ event }: { event: typeof events.$inferSelect }) {
   const [timerExpired, setTimerExpired] = useState<boolean>(false);
@@ -55,6 +57,14 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [ticket, setTicket] =
     useState<Awaited<ReturnType<typeof getTicket>>>(undefined);
+  const [expiredEvent, setExpiredEvent] = useState<boolean | undefined>(
+    undefined
+  );
+  const [eventOptions, setEventOptions] = useState<
+    Awaited<ReturnType<typeof getEventOptionsTickets>>
+  >([]);
+  const [loadingEventOptions, setLoadingEventOptions] =
+    useState<boolean>(false);
 
   let time = new Date();
   let timeLeft = event.time.getTime() - Date.now();
@@ -80,6 +90,20 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
 
   useEffect(() => {
     setIsClient(true);
+
+    if (Date.now() > event.time.getTime()) {
+      setExpiredEvent(true);
+    }
+
+    getEventOptionsTickets(event.id)
+      .then((eventOptions) => {
+        setLoadingEventOptions(true);
+        setEventOptions(eventOptions);
+      })
+      .catch()
+      .finally(() => {
+        setLoadingEventOptions(false);
+      });
   }, []);
 
   async function addTicketToCartHandler(e: MouseEvent<ElementRef<'button'>>) {
@@ -108,36 +132,73 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
 
     try {
       const ticket = await getTicket(event.id, selectedOption.id);
+
       if (!user) return toast('no user found');
+      // if (expiredEvent) return toast('event expired');
       if (!ticket) return toast('no ticket found');
+      setTicket(ticket);
 
       if (!ticket.stock) return toast('tickets sold out');
+
+      const ticketCartItem = await getCartItemByTicketId(ticket.id);
+      if (
+        quantity > TICKETS_LIMIT ||
+        ticketCartItem?.quantity === TICKETS_LIMIT
+      )
+        return toast('3 tickets max');
+      else if (quantity > ticket.stock) return toast('not enough tickets');
+
+      let reachedLimit = false;
+      let orderItemQty = 0;
+      user.orders.forEach((order) => {
+        let orderItem = order.tickets.find((t) => t.ticketId === ticket.id);
+        if (orderItem && orderItem.quantity + quantity > TICKETS_LIMIT) {
+          orderItemQty = orderItem.quantity;
+          reachedLimit = true;
+          return;
+        }
+      });
+
+      if (reachedLimit)
+        return toast(
+          `You bought ${orderItemQty}, only ${
+            TICKETS_LIMIT - orderItemQty
+          } left`
+        );
+
+      let inTheCart = user.cart.items.find(
+        (item) => item.ticketId === ticket.id
+      );
+
+      if (inTheCart) {
+        // just update quantity
+        updateCartQuantity(quantity, inTheCart.id).then(
+          ({ success, message }) => {
+            if (message) toast(message);
+            if (success) setShowDialog(false);
+          }
+        );
+        return;
+      }
+
       let newCartItem: typeof cartItems.$inferInsert = {
         quantity,
         cartId: user.cart.id,
         ticketId: ticket.id,
       };
-      const userTicketCart = await getCart(user.cart.id, ticket.id);
-      if (userTicketCart?.items.length === 3)
-        return toast("you can't add more than 3 tickets");
+
       // check if ticket exists in the users' cart items
       setIsLoading(true);
-      const cartIt = await getCartItemByTicketId(ticket.id);
-      if (cartIt) {
-        // update quantity
-        await updateCartQuantity(quantity + cartIt.quantity, cartIt.id);
-        toast('quantity updated!');
-      } else {
-        const cartItem = await addCartItem(newCartItem);
-        toast('new cart item added', {
-          action: {
-            label: 'cart',
-            onClick: () => {
-              router.replace('/cart');
-            },
+
+      const cartItem = await addCartItem(newCartItem);
+      toast('new cart item added', {
+        action: {
+          label: 'cart',
+          onClick: () => {
+            router.replace('/cart');
           },
-        });
-      }
+        },
+      });
       setIsLoading(false);
       setShowDialog(false);
     } catch (err) {
@@ -175,106 +236,127 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
               }).format(event.time)}
             </p>
           </div>
-          <div className="flex justify-between items-end">
-            <Dialog onOpenChange={setShowDialog} open={showDialog}>
-              <DialogTrigger asChild>
-                <Button className="text-sm tracking-tight scroll-m-20 mt-4">
-                  Buy Ticket
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Buy Ticket</DialogTitle>
-                  <DialogDescription></DialogDescription>
-                </DialogHeader>
-                <Select
-                  onValueChange={(val) => {
-                    let obj = JSON.parse(val);
-                    setSelectOption({
-                      id: obj.id,
-                      name: obj.name,
-                      price: +obj.price,
-                    });
-                  }}
-                >
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="Select an option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Options</SelectLabel>
-                      {/* @ts-ignore */}
-                      {event.options.map((option) => {
-                        return (
-                          <SelectItem
-                            key={option.id}
-                            value={JSON.stringify({
-                              id: option.id,
-                              name: option.name,
-                              price: option.price,
-                            })}
-                            className="flex"
-                          >
-                            {option.name.toUpperCase()}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <div className="space-y-2">
-                  <p>quantity</p>
-                  <Input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => {
-                      setQuantity(+e.target.value);
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <small className="text-sm font-medium leading-none">
-                    price
-                  </small>
-                  <p>
-                    {new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }).format(selectedOption.price || 0)}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <small className="text-sm font-medium leading-none">
-                    total
-                  </small>
-                  <p>
-                    {new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    }).format(selectedOption.price * quantity)}
-                  </p>
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={addTicketToCartHandler}
-                    type="submit"
-                    className="flex justify-center text-center"
-                  >
-                    {isLoading ? (
-                      <Loader2 size={15} className="animate-spin" />
-                    ) : (
-                      'Add to Cart'
-                    )}
+          <div className="flex justify-between items-end mt-4">
+            {true && (
+              <Dialog onOpenChange={setShowDialog} open={showDialog}>
+                <DialogTrigger asChild>
+                  <Button className="text-sm tracking-tight scroll-m-20 mt-4">
+                    Buy Ticket
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Buy Ticket</DialogTitle>
+                    <DialogDescription></DialogDescription>
+                  </DialogHeader>
+                  {loadingEventOptions ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <Select
+                      onValueChange={(val) => {
+                        let obj = JSON.parse(val);
+                        setSelectOption({
+                          id: obj.id,
+                          name: obj.name,
+                          price: +obj.price,
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="">
+                        <SelectValue placeholder="Select an option" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Options</SelectLabel>
+                          {/* @ts-ignore */}
+                          {eventOptions.map(
+                            ({
+                              optionId,
+                              optionName,
+                              optionPrice,
+                              ticketStock,
+                            }) => {
+                              return (
+                                <SelectItem
+                                  key={optionId}
+                                  value={JSON.stringify({
+                                    id: optionId,
+                                    name: optionName,
+                                    price: optionPrice,
+                                  })}
+                                  className="flex"
+                                  disabled={ticketStock === 0 ? true : false}
+                                >
+                                  {optionName?.toUpperCase()}
+                                  {ticketStock === 0 && '---SOLD OUT'}
+                                </SelectItem>
+                              );
+                            }
+                          )}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <div className="space-y-2">
+                    <p>quantity</p>
+                    <Input
+                      type="number"
+                      // min={1}
+                      // max={3}
+                      value={quantity}
+                      onChange={(e) => {
+                        setQuantity(+e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <small className="text-sm font-medium leading-none">
+                      price
+                    </small>
+                    <p>
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      }).format(selectedOption.price || 0)}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <small className="text-sm font-medium leading-none">
+                      total
+                    </small>
+                    <p>
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      }).format(selectedOption.price * quantity)}
+                    </p>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      onClick={(e) => {
+                        if (quantity >= 1 && quantity <= 3)
+                          addTicketToCartHandler(e);
+                        else toast('tickets: min 1, max 3');
+                      }}
+                      type="submit"
+                      className="flex justify-center text-center"
+                    >
+                      {isLoading ? (
+                        <Loader2 size={15} className="animate-spin" />
+                      ) : (
+                        'Add to Cart'
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
             <p
               className={cn('text-xs', {
-                'text-red-500': totalSeconds / 3600 <= 24,
+                'text-red-500 font-semibold': totalSeconds / 3600 <= 24,
               })}
             >
-              {!timerExpired
+              {!expiredEvent
                 ? `${days}d:${hours}h:${minutes}m:${seconds}s`
                 : 'finished'}
             </p>

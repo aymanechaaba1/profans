@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   console.log(loggedIn);
 
   if (!loggedIn)
-    if (url.pathname !== '/login')
+    if (url.pathname !== '/login' && url.pathname !== '/register')
       return NextResponse.redirect(new URL('/login', request.url));
 
   return NextResponse.next();

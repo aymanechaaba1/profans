@@ -60,7 +60,7 @@ async function Header() {
                   <Link href={`/account/profile`}>profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link href={`/my-tickets`}>my orders</Link>
+                  <Link href={`/orders`}>orders</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

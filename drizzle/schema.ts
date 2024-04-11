@@ -13,12 +13,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 export const genderEnum = pgEnum('gender', ['male', 'female']);
-export const statusEnum = pgEnum('status', [
-  'pending',
-  'processing',
-  'success',
-  'failed',
-]);
+export const statusEnum = pgEnum('status', ['complete', 'expired', 'open']);
 
 export const users = pgTable(
   'users',
@@ -46,7 +41,7 @@ export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-  status: statusEnum('status').default('pending'),
+  status: statusEnum('status').default('open'),
   total: numeric('total').default('0'),
   userId: uuid('user_id').notNull(),
 });
@@ -121,11 +116,11 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
-  author: one(users, {
+  user: one(users, {
     fields: [orders.userId],
     references: [users.id],
   }),
-  tickets: many(ordersToTickets),
+  tickets: many(orderItems),
 }));
 
 // events-tickets (one-to-many)
@@ -139,7 +134,7 @@ export const ticketsRelations = relations(tickets, ({ one, many }) => ({
     fields: [tickets.eventId],
     references: [events.id],
   }),
-  orders: many(ordersToTickets),
+  orders: many(orderItems),
   eventOption: one(eventOptions, {
     fields: [tickets.optionId],
     references: [eventOptions.id],
@@ -148,9 +143,10 @@ export const ticketsRelations = relations(tickets, ({ one, many }) => ({
 }));
 
 // orders-tickets (many-to-many)
-export const ordersToTickets = pgTable(
-  'orders_to_tickets',
+export const orderItems = pgTable(
+  'order_items',
   {
+    quantity: integer('quantity').notNull(),
     orderId: uuid('order_id')
       .notNull()
       .references(() => orders.id),
@@ -165,19 +161,16 @@ export const ordersToTickets = pgTable(
   })
 );
 
-export const ordersToTicketsRelations = relations(
-  ordersToTickets,
-  ({ one }) => ({
-    ticket: one(tickets, {
-      fields: [ordersToTickets.ticketId],
-      references: [tickets.id],
-    }),
-    order: one(orders, {
-      fields: [ordersToTickets.orderId],
-      references: [orders.id],
-    }),
-  })
-);
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  ticket: one(tickets, {
+    fields: [orderItems.ticketId],
+    references: [tickets.id],
+  }),
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+}));
 
 // events-eventOptions
 export const eventOptionsRelations = relations(

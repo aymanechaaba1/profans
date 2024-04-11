@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 function Events({ data }: { data: (typeof events.$inferSelect)[] }) {
   return (
     <>
-      <h2 className="scroll-m-20 tracking-tight text-2xl">Events</h2>
+      <h2 className="typography text-2xl font-semibold">Events</h2>
       <Tabs defaultValue="upcoming" className=" mt-4">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
