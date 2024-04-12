@@ -10,6 +10,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 export const genderEnum = pgEnum('gender', ['male', 'female']);
@@ -113,6 +114,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     fields: [users.id],
     references: [cart.userId],
   }),
+  claims: many(claims),
 }));
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
@@ -184,4 +186,18 @@ export const eventOptionsRelations = relations(
   })
 );
 
-// cart-cartItems
+export const claims = pgTable('claims', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  subject: varchar('subject', { length: 100 }).notNull(),
+  message: varchar('message', { length: 500 }).notNull(),
+  userId: uuid('user_id').notNull(),
+});
+
+export const claimsRelations = relations(claims, ({ one }) => ({
+  user: one(users, {
+    fields: [claims.userId],
+    references: [users.id],
+  }),
+}));

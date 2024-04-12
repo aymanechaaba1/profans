@@ -1,9 +1,9 @@
 import { getSession } from '@/actions/getSession';
 import db from '@/drizzle';
-import { cartItems, eventOptions, tickets } from '@/drizzle/schema';
+import { cartItems, claims, eventOptions, tickets } from '@/drizzle/schema';
 import { MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { type ClassValue, clsx } from 'clsx';
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { unstable_cache } from 'next/cache';
 import { twMerge } from 'tailwind-merge';
 
@@ -45,6 +45,9 @@ export async function getUser() {
             tickets: true,
           },
         },
+        claims: {
+          orderBy: desc(claims.createdAt),
+        },
       },
     });
 
@@ -81,3 +84,9 @@ export const createOrderId = (orderId: string) =>
     .split('-')
     .map((word) => word.slice(0, 4).toUpperCase())
     .join('');
+
+export const formatId = (id: string, startString: string) =>
+  `${startString}-${id
+    .split('-')
+    .map((word) => word[0].toUpperCase())
+    .join('')}`;

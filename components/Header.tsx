@@ -57,10 +57,7 @@ async function Header() {
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Link href={`/account/profile`}>profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/orders`}>orders</Link>
+                  <Link href={`/account`}>account</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>

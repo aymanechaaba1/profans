@@ -134,6 +134,13 @@
       "when": 1712852218309,
       "tag": "0018_wooden_yellow_claw",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1712937794953,
+      "tag": "0019_numerous_ultimates",
+      "breakpoints": true
     }
   ]
 }
