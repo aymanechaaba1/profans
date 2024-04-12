@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import useSession from '@/hooks/useSession';
 import { updateProfile } from '@/actions/updateProfile';
 import { toast } from 'sonner';
+import { Button } from './ui/button';
 
 export type FormState = {
   errors: string[];
@@ -25,17 +26,17 @@ function SignupSubmitBtn() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg flex justify-center items-center"
+      className="col-span-2 text-white py-2 rounded-lg flex justify-center items-center"
     >
       {pending ? (
         <Loader2 className="animate-spin my-1" size={15} color="white" />
       ) : (
         'save changes'
       )}
-    </button>
+    </Button>
   );
 }
 

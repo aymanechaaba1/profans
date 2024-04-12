@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ElementRef, MouseEvent, use, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Link from 'next/link';
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { Clock, ExternalLink, Loader2, MapPin, Send } from 'lucide-react';
 import { useTimer } from 'react-timer-hook';
 import { Button } from './ui/button';
 import {
@@ -223,11 +223,20 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
         )}
         <CardContent>
           <div className="mb-1">
-            <CardTitle className="mb-1">{event.name}</CardTitle>
-            <p className="text-sm">{event.location}</p>
+            <div className="flex items-center justify-between">
+              <CardTitle className="mb-3">{event.name}</CardTitle>
+              <Link href={`/events/${event.id}`}>
+                <Send size={18} />
+              </Link>
+            </div>
+            <div className="flex items-center gap-x-2">
+              <MapPin size={13} />
+              <p className="text-sm">{event.location}</p>
+            </div>
           </div>
-          <div className="flex items-center justify-between">
-            <p className="mt-1 text-gray-900 text-xs">
+          <div className="flex items-center gap-x-2">
+            <Clock size={13} />
+            <p className="text-gray-900 text-xs">
               {new Intl.DateTimeFormat('en-US', {
                 month: '2-digit',
                 day: '2-digit',
