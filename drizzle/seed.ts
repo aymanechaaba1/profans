@@ -7,12 +7,13 @@ async function main() {
   console.log('seeding starts');
 
   let event: typeof events.$inferInsert = {
-    name: 'barcelona vs psg',
-    description: 'barcelona vs psg',
-    time: new Date(1712775600000),
-    location: 'Parc des Princes',
+    name: 'Barcelona vs PSG',
+    description:
+      'Quarter-Final Leg 2 of 2 Aggregate(3-2) UEFA Champions League',
+    time: new Date(1713294000000),
+    location: 'Estadi Olímpic Lluís Companys',
     thumbnail:
-      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2Fbarcelona-psg.webp?alt=media&token=ca7fe5be-081b-40fd-8a86-99bf540eed49',
+      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2Frival-del-barcelona-cuartos.webp?alt=media&token=64d6dc18-9479-4189-a3dc-e1ef77b38245',
   };
 
   try {
@@ -20,18 +21,18 @@ async function main() {
 
     let options: (typeof eventOptions.$inferInsert)[] = [
       {
-        name: 'public',
-        price: '25',
+        name: 'basic',
+        price: '75',
         eventId: newEvent[0].id,
       },
       {
-        name: 'atlas',
-        price: '95',
+        name: 'vip premium players zone',
+        price: '175',
         eventId: newEvent[0].id,
       },
       {
-        name: 'vip',
-        price: '195',
+        name: 'vip premium honor zone',
+        price: '295',
         eventId: newEvent[0].id,
       },
     ];
@@ -41,13 +42,15 @@ async function main() {
       .values(options)
       .returning();
 
-    let ticket: typeof tickets.$inferInsert = {
-      stock: 5,
-      eventId: newEvent[0].id,
-      optionId: newOptions[0].id,
-    };
+    for (const option of newOptions) {
+      let ticket: typeof tickets.$inferInsert = {
+        stock: 10,
+        eventId: newEvent[0].id,
+        optionId: option.id,
+      };
+      await db.insert(tickets).values(ticket);
+    }
 
-    await db.insert(tickets).values(ticket);
     console.log('data seeded');
   } catch (err) {
     console.log(err);

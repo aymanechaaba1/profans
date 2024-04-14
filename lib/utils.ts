@@ -1,6 +1,12 @@
 import { getSession } from '@/actions/getSession';
 import db from '@/drizzle';
-import { cartItems, claims, eventOptions, tickets } from '@/drizzle/schema';
+import {
+  cartItems,
+  claims,
+  eventOptions,
+  orders,
+  tickets,
+} from '@/drizzle/schema';
 import { MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { type ClassValue, clsx } from 'clsx';
 import { desc, eq, sql } from 'drizzle-orm';
@@ -44,6 +50,7 @@ export async function getUser() {
           with: {
             tickets: true,
           },
+          orderBy: desc(orders.createdAt),
         },
         claims: {
           orderBy: desc(claims.createdAt),
@@ -85,8 +92,5 @@ export const createOrderId = (orderId: string) =>
     .map((word) => word.slice(0, 4).toUpperCase())
     .join('');
 
-export const formatId = (id: string, startString: string) =>
-  `${startString}-${id
-    .split('-')
-    .map((word) => word[0].toUpperCase())
-    .join('')}`;
+export const formatId = (id: string, startString: string = '') =>
+  id.slice(0, 4).padEnd(10, '*');

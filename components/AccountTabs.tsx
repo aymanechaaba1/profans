@@ -29,12 +29,16 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { useFormState, useFormStatus } from 'react-dom';
 import ClaimsTab from './ClaimsTab';
-import { claims } from '@/drizzle/schema';
+import { claims, orders } from '@/drizzle/schema';
+import OrdersTab from './OrdersTab';
+import { getOrders } from '@/actions/geOrders';
 
 function AccountTabs({
   userClaims,
+  userOrders,
 }: {
   userClaims: (typeof claims.$inferSelect)[];
+  userOrders: Awaited<ReturnType<typeof getOrders>>;
 }) {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [state, formAction] = useFormState(addClaim, null);
@@ -65,16 +69,7 @@ function AccountTabs({
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="orders">
-        <Card>
-          <CardHeader>
-            <CardTitle>Track your Orders</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p>orders table</p>
-          </CardContent>
-        </Card>
-      </TabsContent>
+      <OrdersTab userOrders={userOrders} />
       <ClaimsTab
         showDialog={showDialog}
         setShowDialog={setShowDialog}

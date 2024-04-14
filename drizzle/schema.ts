@@ -148,7 +148,10 @@ export const ticketsRelations = relations(tickets, ({ one, many }) => ({
 export const orderItems = pgTable(
   'order_items',
   {
+    createdAt: timestamp('created_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
     quantity: integer('quantity').notNull(),
+    total: numeric('total').notNull(),
     orderId: uuid('order_id')
       .notNull()
       .references(() => orders.id),

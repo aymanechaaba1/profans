@@ -6,6 +6,10 @@ import { Input } from './ui/input';
 import { formatPrice } from '@/utils/helpers';
 import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { toast } from 'sonner';
+import { TICKETS_LIMIT } from '@/utils/config';
+import { getSumOrderItems } from '@/actions/getSumOrderItems';
+import { getCartItemByTicketId } from '@/actions/getCartItemByTicketId';
+import { getCartItemById } from '@/actions/getCartItemById';
 
 function QuantityUnitPriceSubTotal({
   quantity,
@@ -19,10 +23,24 @@ function QuantityUnitPriceSubTotal({
   const [qty, setQty] = useState<number>(quantity);
   const [price, setPrice] = useState<number>(unitPrice);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [boughtTickets, setBoughtTickets] = useState<number>(0);
+  const [ticketsLeftToBuy, setTicketsLeftToBuy] = useState<number>(0);
 
   useEffect(() => {
+    getCartItemById(cartItemId)
+      .then((cartItem) => {
+        return cartItem?.ticketId && getSumOrderItems(cartItem?.ticketId);
+      })
+      .then((sum) => {
+        setBoughtTickets(Number(sum || 0));
+        setTicketsLeftToBuy(TICKETS_LIMIT - Number(sum || 0));
+      })
+      .catch((err) => {
+        toast('something went wrong!');
+      });
+
     // update cart item qty on the database
-    if (qty >= 1 && qty <= 3) {
+    if (qty >= 1 && qty <= TICKETS_LIMIT && qty <= ticketsLeftToBuy) {
       setIsLoading(true);
       updateCartQuantity(qty, cartItemId)
         .then(({ success, message }) => {
@@ -31,8 +49,8 @@ function QuantityUnitPriceSubTotal({
         .catch((err) => {
           setIsLoading(false);
         });
-    } else toast('min tickets is 1 and max is 3');
-  }, [qty]);
+    } else toast(`You bought ${boughtTickets}, ${ticketsLeftToBuy} left`);
+  }, [qty, boughtTickets, ticketsLeftToBuy]);
 
   return (
     <div>
@@ -45,7 +63,7 @@ function QuantityUnitPriceSubTotal({
               className="mt-3"
               value={qty}
               min={1}
-              max={3}
+              max={ticketsLeftToBuy}
               onChange={(e) => {
                 setQty(+e.target.value);
               }}
