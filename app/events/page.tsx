@@ -1,19 +1,16 @@
+import { getPassedEvents } from '@/actions/getPassedEvents';
+import { getUpcomingEvents } from '@/actions/getUpcomingEvents';
 import Events from '@/components/Events';
 import db from '@/drizzle';
 import React from 'react';
 
 async function EventsPage() {
-  const events = await db.query.events.findMany({
-    orderBy: (events, { desc }) => desc(events.createdAt),
-    with: {
-      options: true,
-      tickets: true,
-    },
-  });
+  const upcomingEvents = await getUpcomingEvents();
+  const passedEvents = await getPassedEvents();
 
   return (
     <div>
-      <Events data={events} />
+      <Events upcomingEvents={upcomingEvents} passedEvents={passedEvents} />
     </div>
   );
 }

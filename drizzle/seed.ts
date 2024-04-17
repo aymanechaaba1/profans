@@ -7,13 +7,13 @@ async function main() {
   console.log('seeding starts');
 
   let event: typeof events.$inferInsert = {
-    name: 'Barcelona vs PSG',
+    name: 'Real Madrid vs Man City',
     description:
-      'Quarter-Final Leg 2 of 2 Aggregate(3-2) UEFA Champions League',
-    time: new Date(1713294000000),
-    location: 'Estadi Olímpic Lluís Companys',
+      'Quarter-Final Leg 2 of 2 Aggregate(3-3) UEFA Champions League',
+    time: new Date(1713384000000),
+    location: 'Etihad Stadium',
     thumbnail:
-      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2Frival-del-barcelona-cuartos.webp?alt=media&token=64d6dc18-9479-4189-a3dc-e1ef77b38245',
+      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2FWhy-Real-Madrid-drawing-Manchester-City-in-Champions-League-Quarterfinals-is-a-nightmare.jpg?alt=media&token=d7850d42-17ff-4233-8f80-6fe7281ca001',
   };
 
   try {
@@ -44,7 +44,7 @@ async function main() {
 
     for (const option of newOptions) {
       let ticket: typeof tickets.$inferInsert = {
-        stock: 10,
+        stock: 50,
         eventId: newEvent[0].id,
         optionId: option.id,
       };

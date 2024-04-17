@@ -48,8 +48,13 @@ import { getEventOptionsTickets } from '@/actions/getEventOptionsTickets';
 import { getEvent } from '@/actions/getEvent';
 import { getSumOrderItems } from '@/actions/getSumOrderItems';
 import { getMinPrice } from '@/actions/getMinPrice';
+import { getUpcomingEvents } from '@/actions/getUpcomingEvents';
 
-function Event({ event }: { event: typeof events.$inferSelect }) {
+function Event({
+  event,
+}: {
+  event: Awaited<ReturnType<typeof getUpcomingEvents>>[0];
+}) {
   const [timerExpired, setTimerExpired] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const [selectedOption, setSelectOption] = useState<{
@@ -118,12 +123,14 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
   async function addTicketToCartHandler(e: MouseEvent<ElementRef<'button'>>) {
     if (!selectedOption.name) return toast('please select an option');
 
-    // @ts-ignore
-    let eventNames: Readonly<string, string[]> = event.options.map(
-      (opt: any) => opt.name
-    );
-    // @ts-ignore
-    let eventPrices = event.options.map((opt) => opt.price.toString());
+    let eventNames = event.options.map((opt) => opt.name) as [
+      string,
+      ...string[]
+    ];
+    let eventPrices = event.options.map((opt) => String(opt.price)) as [
+      string,
+      ...string[]
+    ];
 
     let schema = z.object({
       name: z.enum(eventNames).default(eventNames[0]),
@@ -378,13 +385,13 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
               </div>
             )}
             <p
-              className={cn('text-xs', {
+              className={cn('text-xs mt-3', {
                 'text-red-500 font-semibold': totalSeconds / 3600 <= 24,
               })}
             >
               {!expiredEvent
                 ? `${days}d:${hours}h:${minutes}m:${seconds}s`
-                : 'finished'}
+                : 'expired'}
             </p>
           </div>
         </CardContent>
