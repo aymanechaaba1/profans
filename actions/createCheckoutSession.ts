@@ -4,12 +4,9 @@ import stripe from '@/lib/stripe';
 import { getUrl, getUser } from '@/lib/utils';
 import 'dotenv/config';
 import { CheckoutSessionPayload } from '@/types/stripe';
+import { redirect } from 'next/navigation';
 
-export async function createCheckoutSession({
-  payload,
-}: {
-  payload: CheckoutSessionPayload;
-}) {
+export async function createCheckoutSession(payload: CheckoutSessionPayload) {
   const user = await getUser();
 
   if (!payload.lineItems.length)
@@ -27,5 +24,8 @@ export async function createCheckoutSession({
       ...(user && { userId: user.id }),
     },
   });
-  return { session };
+
+  if (session && session.url) redirect(session.url);
+
+  return null;
 }
