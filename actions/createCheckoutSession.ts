@@ -6,7 +6,10 @@ import 'dotenv/config';
 import { CheckoutSessionPayload } from '@/types/stripe';
 import { redirect } from 'next/navigation';
 
-export async function createCheckoutSession(payload: CheckoutSessionPayload) {
+export async function createCheckoutSession(
+  prevState: any,
+  payload: CheckoutSessionPayload
+) {
   const user = await getUser();
 
   if (!payload.lineItems.length)

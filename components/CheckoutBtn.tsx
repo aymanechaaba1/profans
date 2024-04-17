@@ -10,7 +10,7 @@ import { cartItems } from '@/drizzle/schema';
 import { tickets } from '@/tickets';
 import { useEffect, useState } from 'react';
 import { CheckoutSessionPayload } from '@/types/stripe';
-import { useFormStatus } from 'react-dom';
+import { useFormState, useFormStatus } from 'react-dom';
 
 function Btn() {
   const { pending } = useFormStatus();
@@ -34,6 +34,12 @@ function CheckoutBtn({
 }: {
   basketItems: (typeof cartItems.$inferSelect)[];
 }) {
+  const [state, formAction] = useFormState(createCheckoutSession, null);
+
+  useEffect(() => {
+    state?.message && console.error(state.message);
+  }, [state]);
+
   let lineItems = basketItems.map((item) => ({
     quantity: item.quantity,
     price: tickets.find((ticket) => ticket.ticketId === item.ticketId)
@@ -45,7 +51,7 @@ function CheckoutBtn({
   };
 
   return (
-    <form action={createCheckoutSession.bind(null, payload)}>
+    <form action={formAction.bind(null, payload)}>
       <Btn />
     </form>
   );
