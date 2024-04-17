@@ -7,6 +7,13 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { tickets as TICKETS } from '@/tickets';
+import { Ticket } from '@/components/ticket';
+import { getPdfBuffer } from '@/actions/getPdfBuffer';
+import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
+import { getUser } from '@/lib/utils';
+import { sendToEmail } from '@/actions/sendToEmail';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '@/lib/firebase';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -72,9 +79,10 @@ export async function POST(req: NextRequest) {
 
         if (!newOrder) return;
 
-        const data = await Promise.all(
+        let items: (typeof orderItems.$inferSelect)[] = [];
+        await Promise.all(
           lineItems.data.map(async (lineItem) => {
-            const data = await db
+            items = await db
               .insert(orderItems)
               .values({
                 orderId: newOrder[0].id,
@@ -85,7 +93,6 @@ export async function POST(req: NextRequest) {
                 total: (lineItem.amount_total / 100).toString(),
               })
               .returning();
-            return data;
           })
         );
 
@@ -114,6 +121,16 @@ export async function POST(req: NextRequest) {
         // clear cart
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
         revalidatePath('/', 'layout');
+
+        // send tickets pdf
+        await sendTickets(
+          {
+            id: user.id,
+            email: user.email,
+            firstname: user.firstname,
+          },
+          items
+        );
       } catch (err) {
         console.log(err);
       }
@@ -124,5 +141,38 @@ export async function POST(req: NextRequest) {
 
   return new NextResponse(event.type, {
     status: 200,
+  });
+}
+
+async function sendTickets(
+  user: {
+    id: string;
+    email: string;
+    firstname: string;
+  },
+  items: (typeof orderItems.$inferSelect)[]
+) {
+  let urls: string[] = [];
+
+  for (const item of items) {
+    for (let i = 0; i < item.quantity; i++) {
+      let ticket = await Ticket(item);
+      if (!ticket) return;
+
+      let pdfBuffer = await getPdfBuffer(ticket);
+      let path = `/tickets/${user.id}/${item.orderId}_${item.ticketId}_${i}.pdf`;
+      await uploadPdfToFirebase({
+        path,
+        pdfBuffer,
+      });
+      let url = await getDownloadURL(ref(storage, path));
+      urls.push(url);
+    }
+  }
+
+  await sendToEmail({
+    to: user.email,
+    subject: `${user.firstname}, Download Your Tickets`,
+    text: `Links: \n ${urls.join('\n\n')}`,
   });
 }

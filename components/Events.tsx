@@ -1,5 +1,3 @@
-'use client';
-
 import { eventOptions, events } from '@/drizzle/schema';
 import Event from './Event';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

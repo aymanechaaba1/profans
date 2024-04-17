@@ -48,7 +48,12 @@ export async function getUser() {
         },
         orders: {
           with: {
-            tickets: true,
+            tickets: {
+              with: {
+                order: true,
+                ticket: true,
+              },
+            },
           },
           orderBy: desc(orders.createdAt),
         },
