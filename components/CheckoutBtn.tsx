@@ -36,13 +36,6 @@ function CheckoutBtn({
 }) {
   const [state, formAction] = useFormState(createCheckoutSession, null);
 
-  useEffect(() => {
-    if (state?.message) {
-      console.log(state.message);
-      toast(state.message);
-    }
-  }, [state]);
-
   let lineItems = basketItems.map((item) => ({
     quantity: item.quantity,
     price: tickets.find((ticket) => ticket.ticketId === item.ticketId)
