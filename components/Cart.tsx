@@ -33,7 +33,9 @@ async function Cart({
     );
 
   return (
-    <p className="text-center text-sm tracking-tight scroll-m-20">no basket</p>
+    <p className="text-center text-sm tracking-tight scroll-m-20 text-muted-foreground">
+      you must log in
+    </p>
   );
 }
 

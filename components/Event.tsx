@@ -149,7 +149,7 @@ function Event({
     try {
       const ticket = await getTicket(event.id, selectedOption.id);
 
-      if (!user) return toast('no user found');
+      if (!user) return toast('you are not logged in');
       // if (expiredEvent) return toast('event expired');
       if (!ticket) return toast('no ticket found');
       setTicket(ticket);

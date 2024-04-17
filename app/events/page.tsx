@@ -5,8 +5,10 @@ import db from '@/drizzle';
 import React from 'react';
 
 async function EventsPage() {
-  const upcomingEvents = await getUpcomingEvents();
-  const passedEvents = await getPassedEvents();
+  const [upcomingEvents, passedEvents] = await Promise.all([
+    getUpcomingEvents(),
+    getPassedEvents(),
+  ]);
 
   return (
     <div>
