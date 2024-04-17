@@ -10,7 +10,7 @@ export async function createCheckoutSession(
   prevState: any,
   payload: CheckoutSessionPayload
 ) {
-  let message: any;
+  let message: string;
 
   try {
     const user = await getUser();
@@ -30,8 +30,6 @@ export async function createCheckoutSession(
 
     if (session && session.url) redirect(session.url);
   } catch (err) {
-    message = err;
+    console.log(err);
   }
-
-  return { message };
 }
