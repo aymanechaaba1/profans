@@ -10,26 +10,21 @@ export async function createCheckoutSession(
   prevState: any,
   payload: CheckoutSessionPayload
 ) {
-  let message: string;
+  let message: string = '';
 
-  try {
-    const user = await getUser();
+  const user = await getUser();
 
-    if (!payload.lineItems.length) message = 'no items in your cart';
+  if (!payload.lineItems.length) message = 'no items in your cart';
 
-    const session = await stripe.checkout.sessions.create({
-      line_items: payload.lineItems,
-      mode: 'payment',
-      customer_email: user?.email,
-      success_url: `${getUrl()}/account`,
-      cancel_url: `${getUrl()}/cart`,
-      metadata: {
-        ...(user && { userId: user.id }),
-      },
-    });
-
-    if (session && session.url) redirect(session.url);
-  } catch (err) {
-    console.log(err);
-  }
+  const session = await stripe.checkout.sessions.create({
+    line_items: payload.lineItems,
+    mode: 'payment',
+    customer_email: user?.email,
+    success_url: `${getUrl()}/account`,
+    cancel_url: `${getUrl()}/cart`,
+    metadata: {
+      ...(user && { userId: user.id }),
+    },
+  });
+  if (session && session.url) redirect(session.url);
 }
