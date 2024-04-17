@@ -37,7 +37,10 @@ function CheckoutBtn({
   const [state, formAction] = useFormState(createCheckoutSession, null);
 
   useEffect(() => {
-    state && console.error(state);
+    if (state?.message) {
+      console.log(state.message);
+      toast(state.message);
+    }
   }, [state]);
 
   let lineItems = basketItems.map((item) => ({

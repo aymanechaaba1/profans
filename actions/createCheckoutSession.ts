@@ -33,5 +33,5 @@ export async function createCheckoutSession(
     message = err;
   }
 
-  return message;
+  return { message };
 }
