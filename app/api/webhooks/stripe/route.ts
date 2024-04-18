@@ -20,15 +20,18 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = headers().get('stripe-signature');
 
-  console.log('sig', sig);
-  console.log('wh_secret:', process.env.STRIPE_WEBHOOK_SECRET);
+  if (!sig)
+    return new NextResponse(null, {
+      status: 400,
+      statusText: 'INVALID SIGNATURE',
+    });
 
   let event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
-      sig!,
-      'whsec_PWRuNIN5JvVS2fd5zIscHxGpOy2uISxi'
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err) {
     return new NextResponse(null, {
@@ -46,8 +49,9 @@ export async function POST(req: NextRequest) {
         !checkoutSessionCompleted.amount_total ||
         !checkoutSessionCompleted.status
       )
-        return new Response('MISSIONG CHECKOUT SESSION DATA', {
+        return new Response(null, {
           status: 400,
+          statusText: 'MISSIONG CHECKOUT SESSION DATA',
         });
 
       try {
@@ -64,8 +68,9 @@ export async function POST(req: NextRequest) {
         });
 
         if (!user)
-          return new Response('NO USER FOUND', {
+          return new Response(null, {
             status: 404,
+            statusText: 'NO USER FOUND',
           });
 
         // add new order to db
@@ -110,8 +115,9 @@ export async function POST(req: NextRequest) {
           if (!ticket) return;
 
           if (!ticket.stock)
-            return new Response('TICKETS SOLD OUT', {
+            return new Response(null, {
               status: 400,
+              statusText: 'TICKETS SOLD OUT',
             });
 
           await db
