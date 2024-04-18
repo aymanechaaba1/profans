@@ -5,6 +5,7 @@ import CartTotal from './CartTotal';
 import CheckoutBtn from './CheckoutBtn';
 import { getCartTotal } from '@/lib/utils';
 import { Separator } from './ui/separator';
+import db from '@/drizzle';
 
 async function Cart({
   basket,
@@ -23,7 +24,9 @@ async function Cart({
           <CartItems items={basket.items} />
           <div className="md:w-1/3">
             <CartTotal total={total} />
-            <CheckoutBtn />
+            {basket.items.length > 0 && (
+              <CheckoutBtn basketItems={basket.items} />
+            )}
           </div>
         </div>
       </div>

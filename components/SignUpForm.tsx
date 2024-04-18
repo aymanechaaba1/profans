@@ -24,6 +24,7 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { checkUser } from '@/actions/checkUser';
 import { validateEmail } from '@/actions/validateEmail';
+import { Button } from './ui/button';
 
 export type SignUpFormState = {
   ok: boolean;
@@ -59,17 +60,17 @@ function SendOtpSubmitBtn() {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg flex justify-center"
+      className="col-span-2 text-white py-2 rounded-lg flex justify-center"
     >
       {pending ? (
         <Loader2 className="animate-spin my-1" size={15} color="white" />
       ) : (
         'next'
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -77,17 +78,17 @@ function SignupSubmitBtn({ isRunning }: { isRunning?: boolean }) {
   const { pending } = useFormStatus();
 
   return (
-    <button
+    <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 bg-blue-500 text-white py-2 rounded-lg flex justify-center items-center"
+      className="col-span-2 text-white py-2 rounded-lg flex justify-center items-center"
     >
       {pending ? (
         <Loader2 className="animate-spin my-1" size={15} color="white" />
       ) : (
         'signup'
       )}
-    </button>
+    </Button>
   );
 }
 
@@ -315,7 +316,7 @@ function SignUpForm() {
         </form>
       )}
       <p className="mt-4 text-sm col-span-2">
-        already have an account,
+        <span className="mr-1">already have an account,</span>
         <Link href={'/login'} className="font-bold">
           login!
         </Link>

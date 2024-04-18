@@ -17,7 +17,7 @@ export default async function DemoPage() {
     <div className="my-5">
       {data && (
         <>
-          <h1 className="text-2xl mb-4 tracking-tight scroll-m-20">
+          <h1 className="typography font-semibold text-2xl mb-4">
             Your Orders
           </h1>
           <DataTable columns={columns} data={data} />

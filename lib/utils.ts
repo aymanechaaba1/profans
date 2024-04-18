@@ -40,6 +40,11 @@ export async function getUser() {
             items: true,
           },
         },
+        orders: {
+          with: {
+            tickets: true,
+          },
+        },
       },
     });
 
@@ -65,3 +70,14 @@ export const getCartTotal = async () => {
 
   return total.total;
 };
+
+export const getUrl = () =>
+  process.env.VERCEL_ENV === 'development'
+    ? 'http://localhost:3000'
+    : `https://${process.env.VERCEL_URL}`;
+
+export const createOrderId = (orderId: string) =>
+  orderId
+    .split('-')
+    .map((word) => word.slice(0, 4).toUpperCase())
+    .join('');

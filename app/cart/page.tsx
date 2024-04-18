@@ -6,8 +6,6 @@ import { getUser } from '@/lib/utils';
 async function CartPage() {
   const user = await getUser();
 
-  console.log(user?.cart.items);
-
   return (
     <div className="">
       <Cart basket={user?.cart} />

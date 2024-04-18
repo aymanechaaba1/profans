@@ -1,16 +1,61 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import { Loader2, Lock } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
+import { createCheckoutSession } from '@/actions/createCheckoutSession';
+import Stripe from 'stripe';
+import { cartItems } from '@/drizzle/schema';
+import { tickets } from '@/tickets';
+import { useFormState, useFormStatus } from 'react-dom';
+import { useState } from 'react';
+import { CheckoutSessionPayload } from '@/types/stripe';
 
-function CheckoutBtn() {
+function CheckoutBtn({
+  basketItems,
+}: {
+  basketItems: (typeof cartItems.$inferSelect)[];
+}) {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+
+  let lineItems = basketItems.map((item) => ({
+    quantity: item.quantity,
+    price: tickets.find((ticket) => ticket.ticketId === item.ticketId)
+      ?.stripePriceId,
+  })) as Stripe.Checkout.SessionCreateParams.LineItem[];
+
+  let payload: CheckoutSessionPayload = {
+    lineItems,
+  };
+
   return (
-    <Button className="w-full mt-5" onClick={() => {}}>
-      <Lock className="mr-3" size={15} />
-      <span>Checkout</span>
-    </Button>
+    <form
+      action={async (formData) => {
+        setIsLoading(true);
+        createCheckoutSession({ payload })
+          .then(({ session, message }) => {
+            if (message) return toast(message);
+            if (session?.url) router.push(session.url);
+          })
+          .catch((err) => toast('something went wrong!'))
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }}
+    >
+      <Button className="w-full mt-5 flex justify-center">
+        {!isLoading ? (
+          <>
+            <Lock className="mr-3" size={15} />
+            <span>Checkout</span>
+          </>
+        ) : (
+          <Loader2 className="animate-spin" />
+        )}
+      </Button>
+    </form>
   );
 }
 

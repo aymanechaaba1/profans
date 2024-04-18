@@ -22,14 +22,16 @@ function QuantityUnitPriceSubTotal({
 
   useEffect(() => {
     // update cart item qty on the database
-    setIsLoading(true);
-    updateCartQuantity(qty, cartItemId)
-      .then(({ success, message }) => {
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
+    if (qty >= 1 && qty <= 3) {
+      setIsLoading(true);
+      updateCartQuantity(qty, cartItemId)
+        .then(({ success, message }) => {
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          setIsLoading(false);
+        });
+    } else toast('min tickets is 1 and max is 3');
   }, [qty]);
 
   return (
@@ -41,8 +43,9 @@ function QuantityUnitPriceSubTotal({
             <Input
               type="number"
               className="mt-3"
-              min={1}
               value={qty}
+              min={1}
+              max={3}
               onChange={(e) => {
                 setQty(+e.target.value);
               }}
