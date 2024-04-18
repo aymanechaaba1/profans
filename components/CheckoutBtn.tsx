@@ -36,11 +36,14 @@ function CheckoutBtn({
 }) {
   const [state, formAction] = useFormState(createCheckoutSession, null);
 
-  let lineItems = basketItems.map((item) => ({
-    quantity: item.quantity,
-    price: tickets.find((ticket) => ticket.ticketId === item.ticketId)
-      ?.stripePriceId,
-  })) as Stripe.Checkout.SessionCreateParams.LineItem[];
+  let lineItems = basketItems.map((item) => {
+    let ticket = tickets.find((ticket) => ticket.ticketId === item.ticketId);
+    if (!ticket || !ticket.stripePriceId) return;
+    return {
+      quantity: item.quantity,
+      price: ticket.stripePriceId,
+    };
+  }) as Stripe.Checkout.SessionCreateParams.LineItem[];
 
   let payload: CheckoutSessionPayload = {
     lineItems,

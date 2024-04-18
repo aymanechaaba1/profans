@@ -12,8 +12,11 @@ export async function middleware(request: NextRequest) {
   const payload = await verifyJWT(token!);
   const loggedIn = !!token && !!payload;
 
+  let isApiRoute = url.pathname.startsWith('/api');
   let isAuthRoute = authRoutes.includes(url.pathname);
   let isPublicRoute = publicRoutes.includes(url.pathname);
+
+  if (isApiRoute) return null;
 
   if (isAuthRoute) {
     if (loggedIn) return NextResponse.redirect(new URL(`/`, request.url));

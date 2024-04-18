@@ -14,30 +14,22 @@ import { getUser } from '@/lib/utils';
 import { sendToEmail } from '@/actions/sendToEmail';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
-import 'dotenv/config';
+import type Stripe from 'stripe';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const sig = headers().get('stripe-signature');
+  const sig = req.headers.get('stripe-signature') as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!sig)
-    return new NextResponse(null, {
-      status: 400,
-      statusText: 'INVALID SIGNATURE',
-    });
-
-  let event;
+  let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    return new NextResponse(null, {
-      status: 400,
-      statusText: `Webhook Error`,
-    });
+    if (!sig || !webhookSecret)
+      return new Response('Webhook secret not found.', { status: 400 });
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    console.log(`🔔  Webhook received: ${event.type}`);
+  } catch (err: any) {
+    console.log(`❌ Error message: ${err.message}`);
+    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   switch (event.type) {
