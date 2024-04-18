@@ -1,5 +1,5 @@
-import { cartItems } from '@/drizzle/schema';
-import { Card } from './ui/card';
+import { cartItems, eventOptions, events, tickets } from '@/drizzle/schema';
+import { Card, CardDescription } from './ui/card';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { getEvent } from '@/actions/getEvent';
@@ -11,27 +11,38 @@ import { getTicket } from '@/actions/getTicket';
 import db from '@/drizzle';
 import { Trash2 } from 'lucide-react';
 import { deleteCartItem } from '@/actions/deleteCartItem';
+import { eq } from 'drizzle-orm';
 
 async function CartItem({
   cartItem,
 }: {
   cartItem: typeof cartItems.$inferSelect;
 }) {
-  const [event, option] = await Promise.all([
-    await getEvent(undefined, cartItem.ticketId),
-    await getEventOption(cartItem.ticketId),
+  const [event] = await Promise.all([
+    await db
+      .select({
+        eventName: events.name,
+        thumbnail: events.thumbnail,
+        eventDescription: events.description,
+        option: eventOptions.name,
+        price: eventOptions.price,
+      })
+      .from(events)
+      .fullJoin(tickets, eq(events.id, tickets.eventId))
+      .fullJoin(eventOptions, eq(tickets.optionId, eventOptions.id))
+      .where(eq(tickets.id, cartItem.ticketId)),
   ]);
 
   return (
     <Card className="p-4">
       <div className="">
         <div className="flex justify-between items-start">
-          {event?.thumbnail && (
+          {event[0].thumbnail && (
             <div className="w-1/2 mb-3">
               <Image
                 priority
-                src={event.thumbnail}
-                alt={event.name}
+                src={event[0].thumbnail}
+                alt={''}
                 width={100}
                 height={100}
                 className="object-cover w-full rounded-lg"
@@ -51,24 +62,29 @@ async function CartItem({
           </form>
         </div>
         <div>
-          <h3 className="scroll-m-20 tracking-tight font-semibold text-xl mb-2">
-            {event?.name}
-          </h3>
+          <div className="mb-2">
+            <h3 className="scroll-m-20 tracking-tight font-semibold text-xl">
+              {event[0].eventName}
+            </h3>
+            <CardDescription className="">
+              {event[0].eventDescription}
+            </CardDescription>
+          </div>
           {/* option selected */}
           <div className="flex items-center gap-x-5 mb-3">
             <p className="font-medium text-sm tracking-tight">
               selected option:
             </p>
             <p className="text-sm tracking-tight">
-              {option[0]?.name?.toUpperCase()}
+              {event[0].option?.toUpperCase()}
             </p>
           </div>
 
           <div>
-            {option[0].price && (
+            {event[0].price && (
               <QuantityUnitPriceSubTotal
                 quantity={cartItem.quantity}
-                unitPrice={+option[0].price}
+                unitPrice={+event[0].price}
                 cartItemId={cartItem.id}
               />
             )}

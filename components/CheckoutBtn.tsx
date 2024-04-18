@@ -9,7 +9,7 @@ import Stripe from 'stripe';
 import { cartItems } from '@/drizzle/schema';
 import { tickets } from '@/tickets';
 import { useFormState, useFormStatus } from 'react-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CheckoutSessionPayload } from '@/types/stripe';
 
 function CheckoutBtn({
@@ -19,6 +19,8 @@ function CheckoutBtn({
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {}, []);
 
   let lineItems = basketItems.map((item) => ({
     quantity: item.quantity,
@@ -33,10 +35,11 @@ function CheckoutBtn({
   return (
     <form
       action={async (formData) => {
+        // console.log(lineItems);
         setIsLoading(true);
         createCheckoutSession({ payload })
           .then(({ session, message }) => {
-            if (message) return toast(message);
+            if (message) toast(message);
             if (session?.url) router.push(session.url);
           })
           .catch((err) => toast('something went wrong!'))

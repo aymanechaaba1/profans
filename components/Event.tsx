@@ -4,7 +4,13 @@ import { cartItems, eventOptions, events } from '@/drizzle/schema';
 import { cn, formatPrice, getTeams, simulateLongTask } from '@/utils/helpers';
 import Image from 'next/image';
 import { ElementRef, MouseEvent, use, useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
 import Link from 'next/link';
 import { Clock, ExternalLink, Loader2, MapPin, Send } from 'lucide-react';
 import { useTimer } from 'react-timer-hook';
@@ -39,6 +45,8 @@ import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { useRouter } from 'next/navigation';
 import { TICKETS_LIMIT } from '@/utils/config';
 import { getEventOptionsTickets } from '@/actions/getEventOptionsTickets';
+import { getEvent } from '@/actions/getEvent';
+import { getSumOrderItems } from '@/actions/getSumOrderItems';
 
 function Event({ event }: { event: typeof events.$inferSelect }) {
   const [timerExpired, setTimerExpired] = useState<boolean>(false);
@@ -149,21 +157,18 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
       else if (quantity > ticket.stock) return toast('not enough tickets');
 
       let reachedLimit = false;
-      let orderItemQty = 0;
-      user.orders.forEach((order) => {
-        let orderItem = order.tickets.find((t) => t.ticketId === ticket.id);
-        if (orderItem && orderItem.quantity + quantity > TICKETS_LIMIT) {
-          orderItemQty = orderItem.quantity;
-          reachedLimit = true;
-          return;
-        }
-      });
+
+      const orderItemsQty = Number((await getSumOrderItems(ticket.id)) || 0);
+      console.log(orderItemsQty);
+      if (orderItemsQty + quantity > TICKETS_LIMIT) {
+        reachedLimit = true;
+      }
+
+      let ticketsLeftToBuy = TICKETS_LIMIT - orderItemsQty;
 
       if (reachedLimit)
         return toast(
-          `You bought ${orderItemQty}, only ${
-            TICKETS_LIMIT - orderItemQty
-          } left`
+          `You bought ${orderItemsQty}, only ${ticketsLeftToBuy} left`
         );
 
       let inTheCart = user.cart.items.find(
@@ -223,8 +228,11 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
         )}
         <CardContent>
           <div className="mb-1">
-            <div className="flex items-center justify-between">
-              <CardTitle className="mb-3">{event.name}</CardTitle>
+            <div className="flex items-start justify-between">
+              <div className="mb-3 space-y-2">
+                <CardTitle className="">{event.name}</CardTitle>
+                <CardDescription>{event.description}</CardDescription>
+              </div>
               <Link href={`/events/${event.id}`}>
                 <Send size={18} />
               </Link>

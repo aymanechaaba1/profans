@@ -1,11 +1,22 @@
 'use client';
 
-import { Loader2, Minus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { CircleHelp, Loader2, Minus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Input } from './ui/input';
 import { formatPrice } from '@/utils/helpers';
 import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { toast } from 'sonner';
+import { TICKETS_LIMIT } from '@/utils/config';
+import { getSumOrderItems } from '@/actions/getSumOrderItems';
+import { getCartItemByTicketId } from '@/actions/getCartItemByTicketId';
+import { getCartItemById } from '@/actions/getCartItemById';
+import { Button } from './ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 function QuantityUnitPriceSubTotal({
   quantity,
@@ -20,9 +31,23 @@ function QuantityUnitPriceSubTotal({
   const [price, setPrice] = useState<number>(unitPrice);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [boughtTickets, setBoughtTickets] = useState<number>(0);
+  const [ticketsLeftToBuy, setTicketsLeftToBuy] = useState<number>(0);
+
   useEffect(() => {
-    // update cart item qty on the database
-    if (qty >= 1 && qty <= 3) {
+    getCartItemById(cartItemId)
+      .then((cartItem) => {
+        return cartItem?.ticketId && getSumOrderItems(cartItem?.ticketId);
+      })
+      .then((sum) => {
+        setBoughtTickets(Number(sum || 0));
+        setTicketsLeftToBuy(TICKETS_LIMIT - Number(sum || 0));
+      })
+      .catch((err) => {
+        toast('something went wrong!');
+      });
+
+    if (qty >= 1 && qty <= TICKETS_LIMIT && qty <= ticketsLeftToBuy) {
       setIsLoading(true);
       updateCartQuantity(qty, cartItemId)
         .then(({ success, message }) => {
@@ -31,13 +56,30 @@ function QuantityUnitPriceSubTotal({
         .catch((err) => {
           setIsLoading(false);
         });
-    } else toast('min tickets is 1 and max is 3');
+    }
   }, [qty]);
 
   return (
     <div>
       <div>
-        <small className="small">quantity</small>
+        <div className="flex items-center gap-x-3">
+          quantity{' '}
+          <span className="text-xs text-red-500">
+            (you bought {boughtTickets}, {ticketsLeftToBuy} left)
+          </span>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <CircleHelp size={10} />
+              </TooltipTrigger>
+              <TooltipContent>
+                <small className="text-xs">
+                  max number of tickets to buy is 3
+                </small>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <div className="flex-items-center-gap-x-3">
           {!isLoading ? (
             <Input
@@ -45,7 +87,7 @@ function QuantityUnitPriceSubTotal({
               className="mt-3"
               value={qty}
               min={1}
-              max={3}
+              max={ticketsLeftToBuy}
               onChange={(e) => {
                 setQty(+e.target.value);
               }}

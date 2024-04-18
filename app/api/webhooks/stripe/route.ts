@@ -1,6 +1,6 @@
 import { metadata } from './../../../login/page';
 import db from '@/drizzle';
-import { cartItems, orderItems, orders, tickets } from '@/drizzle/schema';
+import { cart, cartItems, orderItems, orders, tickets } from '@/drizzle/schema';
 import stripe from '@/lib/stripe';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
@@ -27,10 +27,6 @@ export async function POST(req: NextRequest) {
   }
 
   switch (event.type) {
-    case 'charge.succeeded':
-      const chargeSucceeded = event.data.object;
-      break;
-
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
 
@@ -62,30 +58,36 @@ export async function POST(req: NextRequest) {
           });
 
         // add new order to db
-        const newOrder = await db
-          .insert(orders)
-          .values({
-            status: checkoutSessionCompleted.status,
-            total: String(checkoutSessionCompleted.amount_total / 100),
-            userId: user.id,
-          })
-          .returning();
+        const [newOrder, lineItems] = await Promise.all([
+          db
+            .insert(orders)
+            .values({
+              status: checkoutSessionCompleted.status,
+              total: String(checkoutSessionCompleted.amount_total / 100),
+              userId: user.id,
+            })
+            .returning(),
+          stripe.checkout.sessions.listLineItems(checkoutSessionCompleted.id),
+        ]);
 
         if (!newOrder) return;
 
-        const lineItems = await stripe.checkout.sessions.listLineItems(
-          checkoutSessionCompleted.id
+        const data = await Promise.all(
+          lineItems.data.map(async (lineItem) => {
+            const data = await db
+              .insert(orderItems)
+              .values({
+                orderId: newOrder[0].id,
+                ticketId: TICKETS.find(
+                  (ticket) => ticket.stripePriceId === lineItem?.price?.id
+                )?.ticketId!,
+                quantity: lineItem.quantity || 0,
+                total: (lineItem.amount_total / 100).toString(),
+              })
+              .returning();
+            return data;
+          })
         );
-
-        lineItems.data.forEach(async (lineItem, i) => {
-          await db.insert(orderItems).values({
-            orderId: newOrder[0].id,
-            ticketId: TICKETS.find(
-              (ticket) => ticket.stripePriceId === lineItem?.price?.id
-            )?.ticketId!,
-            quantity: lineItem.quantity || 0,
-          });
-        });
 
         // loop over each ticket and update its stock
         // 1. ticketStock = ticketStock - cartItemQuantity
@@ -110,7 +112,7 @@ export async function POST(req: NextRequest) {
         });
 
         // clear cart
-        await db.delete(cartItems);
+        await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
         revalidatePath('/', 'layout');
       } catch (err) {
         console.log(err);

@@ -40,7 +40,7 @@ async function Header() {
             <Link href={`/cart`} className="relative">
               <ShoppingCart className="" />
               <p className="text-[10px] absolute top-0 -right-3 bg-gray-900 rounded-full text-white w-5 h-5 text-center align-middle flex items-center justify-center font-bold">
-                {user.cart.items.length}
+                {user.cart?.items?.length || 0}
               </p>
             </Link>
             <DropdownMenu>
@@ -57,10 +57,7 @@ async function Header() {
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Link href={`/account/profile`}>profile</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href={`/orders`}>orders</Link>
+                  <Link href={`/account`}>account</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
