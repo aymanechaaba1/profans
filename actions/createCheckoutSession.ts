@@ -1,10 +1,11 @@
 'use server';
 
 import stripe from '@/lib/stripe';
-import { getUser, getURL } from '@/lib/utils';
+import { getUser } from '@/lib/utils';
 import 'dotenv/config';
 import { CheckoutSessionPayload } from '@/types/stripe';
 import { redirect } from 'next/navigation';
+import { getUrl } from '@/utils/helpers';
 
 export async function createCheckoutSession(
   prevState: any,
@@ -21,8 +22,8 @@ export async function createCheckoutSession(
     line_items: payload.lineItems,
     mode: 'payment',
     customer_email: user.email,
-    success_url: getURL('/events'),
-    cancel_url: getURL('/cart'),
+    success_url: getUrl('/events'),
+    cancel_url: getUrl('/cart'),
     metadata: {
       ...(user && { userId: user.id }),
     },
