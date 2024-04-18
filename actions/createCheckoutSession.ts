@@ -22,7 +22,7 @@ export async function createCheckoutSession(
     line_items: payload.lineItems,
     mode: 'payment',
     customer_email: user.email,
-    success_url: getUrl('/events'),
+    success_url: getUrl('/account'),
     cancel_url: getUrl('/cart'),
     metadata: {
       ...(user && { userId: user.id }),
