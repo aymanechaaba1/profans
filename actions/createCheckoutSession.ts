@@ -13,13 +13,14 @@ export async function createCheckoutSession(
   let message: string = '';
 
   const user = await getUser();
+  if (!user) return;
 
   if (!payload.lineItems.length) message = 'no items in your cart';
 
   const session = await stripe.checkout.sessions.create({
     line_items: payload.lineItems,
     mode: 'payment',
-    customer_email: user?.email,
+    customer_email: user.email,
     success_url: `${getUrl()}/account`,
     cancel_url: `${getUrl()}/cart`,
     metadata: {
