@@ -20,12 +20,15 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = headers().get('stripe-signature');
 
+  console.log('sig', sig);
+  console.log('wh_secret:', process.env.STRIPE_WEBHOOK_SECRET);
+
   let event;
   try {
     event = stripe.webhooks.constructEvent(
       body,
       sig!,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      'whsec_PWRuNIN5JvVS2fd5zIscHxGpOy2uISxi'
     );
   } catch (err) {
     return new NextResponse(null, {
