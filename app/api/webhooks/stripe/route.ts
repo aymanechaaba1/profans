@@ -14,6 +14,7 @@ import { getUser } from '@/lib/utils';
 import { sendToEmail } from '@/actions/sendToEmail';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
+import 'dotenv/config';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();

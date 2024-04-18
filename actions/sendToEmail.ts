@@ -1,6 +1,7 @@
 'use server';
 
 import nodemailer from 'nodemailer';
+import 'dotenv/config';
 
 type Props = {
   to: string;
@@ -13,7 +14,7 @@ export async function sendToEmail({ to, subject, text }: Props) {
     host: 'smtp.gmail.com',
     auth: {
       user: 'aymanechaaba1@gmail.com',
-      pass: process.env.NODEMAILER_PASS || 'ozvo hrxc eahj rgeg', // secret key
+      pass: process.env.NODEMAILER_PASS,
     },
   });
 
