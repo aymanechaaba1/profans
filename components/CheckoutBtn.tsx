@@ -36,8 +36,13 @@ function CheckoutBtn({
 }) {
   const [state, formAction] = useFormState(createCheckoutSession, null);
 
+  console.log(
+    'price_1P6u8PGaTqN0NXIP2JA9UbFa' === 'price_1P6u8PGaTqN0NXIP2JA9UbFa'
+  );
+  console.log('TICKETS', tickets);
   let lineItems = basketItems.map((item) => {
     let ticket = tickets.find((ticket) => ticket.ticketId === item.ticketId);
+    console.log('TICKET', ticket);
     if (!ticket || !ticket.stripePriceId) return;
     return {
       quantity: item.quantity,
