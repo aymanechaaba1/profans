@@ -1,4 +1,4 @@
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 import { redirect } from 'next/navigation';
 
 export default async function Home() {

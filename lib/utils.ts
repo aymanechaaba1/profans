@@ -1,7 +1,10 @@
 import { getSession } from '@/actions/getSession';
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
+import { cartItems, eventOptions, tickets } from '@/drizzle/schema';
 import { MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { type ClassValue, clsx } from 'clsx';
+import { eq, sql } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -31,7 +34,34 @@ export async function getUser() {
   if (session && session.id)
     user = await db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, session.id as string),
+      with: {
+        cart: {
+          with: {
+            items: true,
+          },
+        },
+      },
     });
 
   return user;
 }
+
+export const getCachedUser = unstable_cache(getUser, ['user'], {
+  tags: ['user'],
+});
+
+export const getCartTotal = async () => {
+  // SELECT SUM(event_options.price * cart_items.quantity)
+  // FROM event_options
+  // JOIN tickets ON event_options.id = tickets.option_id
+  // JOIN cart_items ON tickets.id = cart_items.ticket_id;
+  const [total] = await db
+    .select({
+      total: sql<number>`SUM(${eventOptions.price} * ${cartItems.quantity})`,
+    })
+    .from(eventOptions)
+    .fullJoin(tickets, eq(eventOptions.id, tickets.optionId))
+    .fullJoin(cartItems, eq(tickets.id, cartItems.ticketId));
+
+  return total.total;
+};

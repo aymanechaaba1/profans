@@ -1,6 +1,6 @@
 import { logout } from '@/actions/logout';
 import Avatar from './Avatar';
-import { LogOut } from 'lucide-react';
+import { LogOut, ShoppingBasket, ShoppingCart } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -11,17 +11,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 import { getSession } from '@/actions/getSession';
+import { getCachedUser, getUser } from '@/lib/utils';
 
 async function Header() {
-  const session = await getSession();
-  let user;
-
-  if (session && session.id)
-    user = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, session.id as string),
-    });
+  const user = await getUser();
 
   return (
     <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,43 +26,52 @@ async function Header() {
         {/* links */}
         <nav className="flex-1 flex items-center gap-4 text-sm lg:gap-6">
           <Link
-            href={'/'}
+            href={'/events'}
             className="transition-colors hover:text-foreground/80 text-foreground/60"
           >
-            link
+            events
           </Link>
         </nav>
+
         {/* login and signup btns if user is not logged in */}
         {/* else display avatar */}
-        {session && user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {user.firstname && user.lastname && (
-                <Avatar firstname={user.firstname} lastname={user.lastname} />
-              )}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>
-                <p>
-                  {user?.firstname} {user?.lastname}
-                </p>
-                <p className="text-xs text-gray-500">{user.email}</p>
-              </DropdownMenuLabel>
-              <DropdownMenuItem>
-                <Link href={`/account/profile`}>profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href={`/my-tickets`}>my tickets</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                <form action={logout}>
-                  <button type="submit">logout</button>
-                </form>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {user ? (
+          <div className="flex items-center gap-x-6">
+            <Link href={`/cart`} className="relative">
+              <ShoppingCart className="" />
+              <p className="text-[10px] absolute top-0 -right-3 bg-gray-900 rounded-full text-white w-5 h-5 text-center align-middle flex items-center justify-center font-bold">
+                {user.cart.items.length}
+              </p>
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                {user.firstname && user.lastname && (
+                  <Avatar firstname={user.firstname} lastname={user.lastname} />
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>
+                  <p>
+                    {user?.firstname} {user?.lastname}
+                  </p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuItem>
+                  <Link href={`/account/profile`}>profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href={`/my-tickets`}>my orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <form action={logout}>
+                    <button type="submit">logout</button>
+                  </form>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ) : (
           <div className="flex items-center space-x-4">
             <Link href={'/login'} className="py-2 px-3 text-sm">
@@ -75,7 +79,7 @@ async function Header() {
             </Link>
             <Link
               href={'/register'}
-              className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-blue-500 text-primary-foreground shadow hover:bg-blue-600 h-9 px-4 py-2 rounded-[6px]"
+              className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-primary-foreground shadow h-9 px-4 py-2 rounded-[6px]"
             >
               signup
             </Link>

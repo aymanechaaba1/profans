@@ -1,6 +1,6 @@
 'use server';
 
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 import client, { verifySid } from '@/lib/twilio';
 import { VerificationInstance } from 'twilio/lib/rest/verify/v2/service/verification';
 import { z } from 'zod';

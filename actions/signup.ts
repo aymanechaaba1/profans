@@ -1,7 +1,7 @@
 'use server';
 
-import { users } from '@/drizzle/schema';
-import db from '@/drizzle/seed';
+import { cart, users } from '@/drizzle/schema';
+import db from '@/drizzle';
 import { getCities } from '@/utils/helpers';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
@@ -62,6 +62,13 @@ export async function signup(
       .values({
         ...result.data,
         phone: `${result.data.calling_code}${result.data.phone}`,
+      })
+      .returning();
+
+    const newCart = await db
+      .insert(cart)
+      .values({
+        userId: newUser[0].id,
       })
       .returning();
 

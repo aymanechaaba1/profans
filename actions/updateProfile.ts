@@ -1,7 +1,7 @@
 'use server';
 
 import { users } from '@/drizzle/schema';
-import db from '@/drizzle/seed';
+import db from '@/drizzle';
 import { UserSchema } from '@/schemas/userSchema';
 import { eq } from 'drizzle-orm';
 import { getSession } from './getSession';
