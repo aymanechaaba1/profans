@@ -23,13 +23,9 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    if (!sig || !webhookSecret)
-      return new Response('Webhook secret not found.', { status: 400 });
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    console.log(`🔔  Webhook received: ${event.type}`);
-  } catch (err: any) {
-    console.log(`❌ Error message: ${err.message}`);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret!);
+  } catch (err) {
+    return new NextResponse(`Webhook Error`);
   }
 
   switch (event.type) {
@@ -41,7 +37,7 @@ export async function POST(req: NextRequest) {
         !checkoutSessionCompleted.amount_total ||
         !checkoutSessionCompleted.status
       )
-        return new Response(null, {
+        return new NextResponse(null, {
           status: 400,
           statusText: 'MISSIONG CHECKOUT SESSION DATA',
         });
@@ -60,7 +56,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (!user)
-          return new Response(null, {
+          return new NextResponse(null, {
             status: 404,
             statusText: 'NO USER FOUND',
           });
@@ -78,61 +74,61 @@ export async function POST(req: NextRequest) {
           stripe.checkout.sessions.listLineItems(checkoutSessionCompleted.id),
         ]);
 
-        if (!newOrder) return;
+        // if (!newOrder) return;
 
-        let items: (typeof orderItems.$inferSelect)[] = [];
-        await Promise.all(
-          lineItems.data.map(async (lineItem) => {
-            items = await db
-              .insert(orderItems)
-              .values({
-                orderId: newOrder[0].id,
-                ticketId: TICKETS.find(
-                  (ticket) => ticket.stripePriceId === lineItem?.price?.id
-                )?.ticketId!,
-                quantity: lineItem.quantity || 0,
-                total: (lineItem.amount_total / 100).toString(),
-              })
-              .returning();
-          })
-        );
+        // let items: (typeof orderItems.$inferSelect)[] = [];
+        // await Promise.all(
+        //   lineItems.data.map(async (lineItem) => {
+        //     items = await db
+        //       .insert(orderItems)
+        //       .values({
+        //         orderId: newOrder[0].id,
+        //         ticketId: TICKETS.find(
+        //           (ticket) => ticket.stripePriceId === lineItem?.price?.id
+        //         )?.ticketId!,
+        //         quantity: lineItem.quantity || 0,
+        //         total: (lineItem.amount_total / 100).toString(),
+        //       })
+        //       .returning();
+        //   })
+        // );
 
-        // loop over each ticket and update its stock
-        // 1. ticketStock = ticketStock - cartItemQuantity
-        user.cart.items.forEach(async (item) => {
-          let ticket = await db.query.tickets.findFirst({
-            where: (tickets, { eq }) => eq(tickets.id, item.ticketId),
-          });
+        // // loop over each ticket and update its stock
+        // // 1. ticketStock = ticketStock - cartItemQuantity
+        // user.cart.items.forEach(async (item) => {
+        //   let ticket = await db.query.tickets.findFirst({
+        //     where: (tickets, { eq }) => eq(tickets.id, item.ticketId),
+        //   });
 
-          if (!ticket) return;
+        //   if (!ticket) return;
 
-          if (!ticket.stock)
-            return new Response(null, {
-              status: 400,
-              statusText: 'TICKETS SOLD OUT',
-            });
+        //   if (!ticket.stock)
+        //     return new NextResponse(null, {
+        //       status: 400,
+        //       statusText: 'TICKETS SOLD OUT',
+        //     });
 
-          await db
-            .update(tickets)
-            .set({
-              stock: ticket.stock - item.quantity,
-            })
-            .where(eq(tickets.id, item.ticketId));
-        });
+        //   await db
+        //     .update(tickets)
+        //     .set({
+        //       stock: ticket.stock - item.quantity,
+        //     })
+        //     .where(eq(tickets.id, item.ticketId));
+        // });
 
-        // clear cart
-        await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
-        revalidatePath('/', 'layout');
+        // // clear cart
+        // await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
+        // revalidatePath('/', 'layout');
 
-        // send tickets pdf
-        await sendTickets(
-          {
-            id: user.id,
-            email: user.email,
-            firstname: user.firstname,
-          },
-          items
-        );
+        // // send tickets pdf
+        // await sendTickets(
+        //   {
+        //     id: user.id,
+        //     email: user.email,
+        //     firstname: user.firstname,
+        //   },
+        //   items
+        // );
       } catch (err) {
         console.log(err);
       }
