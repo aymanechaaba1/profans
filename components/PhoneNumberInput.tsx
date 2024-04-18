@@ -16,6 +16,7 @@ import {
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { MapboxReverseGeocodingData } from '@/types/mapbox';
+import useSession from '@/hooks/useSession';
 
 function PhoneNumberInput({
   state,
@@ -31,6 +32,7 @@ function PhoneNumberInput({
   } = useSWR<RestCountry[], any>('https://restcountries.com/v3.1/all', fetcher);
   const [country, setCountry] = useState<string>('');
   const [idd, setIdd] = useState<Idd | undefined>(undefined);
+  const { user } = useSession();
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(onSuccess, onError);
@@ -96,6 +98,7 @@ function PhoneNumberInput({
               type="phone"
               name="phone"
               autoComplete="off"
+              defaultValue={user?.phone.slice(4)}
               className={cn('outline-none bg-transparent flex-1', {
                 'border-red-500': state?.errors?.phone,
               })}

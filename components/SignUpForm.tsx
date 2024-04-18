@@ -3,7 +3,7 @@
 import PhoneNumberInput from './PhoneNumberInput';
 import { signup } from '@/actions/signup';
 import { MouseEvent, MouseEventHandler, useEffect, useState } from 'react';
-import { cn } from '@/utils/helpers';
+import { cn, getCities } from '@/utils/helpers';
 import { City, MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { toast } from 'sonner';
 import {
@@ -116,7 +116,7 @@ function SignUpForm() {
   useEffect(() => {
     time.setSeconds(time.getSeconds() + 60);
 
-    getCities();
+    getCities().then((data) => setCities(data.results));
     if (otpCode.length === 6) {
       if (otpCode === sentOtp) {
         setValidOtp(true);
@@ -128,23 +128,6 @@ function SignUpForm() {
       formState.ok && router.replace('/');
     }
   }, [formState, otpCode, sentOtp, validOtp, isRunning]);
-
-  async function getCities() {
-    const res = await fetch(
-      'https://parseapi.back4app.com/classes/List_of_Morroco_cities?order=asciiname',
-      {
-        headers: {
-          'X-Parse-Application-Id': '2ZOfB60kP39M5kE4WynRqyP7lNGKZ9MB8fVWqAM9', // This is the fake app's application id
-          'X-Parse-Master-Key': 'Qq7lEIoEEzRris3IM6POE5ewvYuzACVyA6VKtiVb', // This is the fake app's readonly master key
-        },
-      }
-    );
-
-    if (!res.ok) throw new Error(`something went wrong!`);
-
-    const data: MoroccanCitiesResponse = await res.json();
-    setCities(data.results);
-  }
 
   async function emailFormHandler(email: string) {
     const validEmail = await validateEmail(email);

@@ -6,6 +6,9 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/utils/helpers';
 import { fontSans } from '@/lib/fonts';
+import AuthProvider from '@/providers/AuthProvider';
+import { getSession } from '@/actions/getSession';
+import { getUser } from '@/lib/utils';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,13 +16,15 @@ export const metadata: Metadata = {
   title: 'Tadakir.net Clone',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getUser();
+
   return (
-    <UserProvider>
+    <AuthProvider user={user}>
       <html lang="en">
         <body
           className={cn(
@@ -35,6 +40,6 @@ export default function RootLayout({
           </div>
         </body>
       </html>
-    </UserProvider>
+    </AuthProvider>
   );
 }
