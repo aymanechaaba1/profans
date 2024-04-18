@@ -47,8 +47,14 @@ import { TICKETS_LIMIT } from '@/utils/config';
 import { getEventOptionsTickets } from '@/actions/getEventOptionsTickets';
 import { getEvent } from '@/actions/getEvent';
 import { getSumOrderItems } from '@/actions/getSumOrderItems';
+import { getMinPrice } from '@/actions/getMinPrice';
+import { getUpcomingEvents } from '@/actions/getUpcomingEvents';
 
-function Event({ event }: { event: typeof events.$inferSelect }) {
+function Event({
+  event,
+}: {
+  event: Awaited<ReturnType<typeof getUpcomingEvents>>[0];
+}) {
   const [timerExpired, setTimerExpired] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
   const [selectedOption, setSelectOption] = useState<{
@@ -73,6 +79,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
   >([]);
   const [loadingEventOptions, setLoadingEventOptions] =
     useState<boolean>(false);
+  const [minPrice, setMinPrice] = useState<number>(0);
 
   let time = new Date();
   let timeLeft = event.time.getTime() - Date.now();
@@ -103,26 +110,27 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
       setExpiredEvent(true);
     }
 
-    getEventOptionsTickets(event.id)
-      .then((eventOptions) => {
+    Promise.all([getEventOptionsTickets(event.id), getMinPrice(event.id)])
+      .then(([eventOptions, minPrice]) => {
         setLoadingEventOptions(true);
         setEventOptions(eventOptions);
+        setMinPrice(Number(minPrice));
       })
-      .catch()
-      .finally(() => {
-        setLoadingEventOptions(false);
-      });
+      .catch((err) => console.error(err))
+      .finally(() => setLoadingEventOptions(false));
   }, []);
 
   async function addTicketToCartHandler(e: MouseEvent<ElementRef<'button'>>) {
     if (!selectedOption.name) return toast('please select an option');
 
-    // @ts-ignore
-    let eventNames: Readonly<string, string[]> = event.options.map(
-      (opt: any) => opt.name
-    );
-    // @ts-ignore
-    let eventPrices = event.options.map((opt) => opt.price.toString());
+    let eventNames = event.options.map((opt) => opt.name) as [
+      string,
+      ...string[]
+    ];
+    let eventPrices = event.options.map((opt) => String(opt.price)) as [
+      string,
+      ...string[]
+    ];
 
     let schema = z.object({
       name: z.enum(eventNames).default(eventNames[0]),
@@ -141,7 +149,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
     try {
       const ticket = await getTicket(event.id, selectedOption.id);
 
-      if (!user) return toast('no user found');
+      if (!user) return toast('you are not logged in');
       // if (expiredEvent) return toast('event expired');
       if (!ticket) return toast('no ticket found');
       setTicket(ticket);
@@ -153,7 +161,7 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
         quantity > TICKETS_LIMIT ||
         ticketCartItem?.quantity === TICKETS_LIMIT
       )
-        return toast('3 tickets max');
+        return toast(`${TICKETS_LIMIT} tickets max`);
       else if (quantity > ticket.stock) return toast('not enough tickets');
 
       let reachedLimit = false;
@@ -253,129 +261,137 @@ function Event({ event }: { event: typeof events.$inferSelect }) {
               }).format(event.time)}
             </p>
           </div>
-          <div className="flex justify-between items-end mt-4">
+          <div className="flex items-center justify-between">
             {!expiredEvent && (
-              <Dialog onOpenChange={setShowDialog} open={showDialog}>
-                <DialogTrigger asChild>
-                  <Button className="text-sm tracking-tight scroll-m-20 mt-4">
-                    Buy Ticket
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Buy Ticket</DialogTitle>
-                    <DialogDescription></DialogDescription>
-                  </DialogHeader>
-                  {loadingEventOptions ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <Select
-                      onValueChange={(val) => {
-                        let obj = JSON.parse(val);
-                        setSelectOption({
-                          id: obj.id,
-                          name: obj.name,
-                          price: +obj.price,
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="">
-                        <SelectValue placeholder="Select an option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Options</SelectLabel>
-                          {/* @ts-ignore */}
-                          {eventOptions.map(
-                            ({
-                              optionId,
-                              optionName,
-                              optionPrice,
-                              ticketStock,
-                            }) => {
-                              return (
-                                <SelectItem
-                                  key={optionId}
-                                  value={JSON.stringify({
-                                    id: optionId,
-                                    name: optionName,
-                                    price: optionPrice,
-                                  })}
-                                  className="flex"
-                                  disabled={ticketStock === 0 ? true : false}
-                                >
-                                  {optionName?.toUpperCase()}
-                                  {ticketStock === 0 && '---SOLD OUT'}
-                                </SelectItem>
-                              );
-                            }
-                          )}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                  <div className="space-y-2">
-                    <p>quantity</p>
-                    <Input
-                      type="number"
-                      // min={1}
-                      // max={3}
-                      value={quantity}
-                      onChange={(e) => {
-                        setQuantity(+e.target.value);
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <small className="text-sm font-medium leading-none">
-                      price
-                    </small>
-                    <p>
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                      }).format(selectedOption.price || 0)}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <small className="text-sm font-medium leading-none">
-                      total
-                    </small>
-                    <p>
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                      }).format(selectedOption.price * quantity)}
-                    </p>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      onClick={(e) => {
-                        if (quantity >= 1 && quantity <= 3)
-                          addTicketToCartHandler(e);
-                        else toast('tickets: min 1, max 3');
-                      }}
-                      type="submit"
-                      className="flex justify-center text-center"
-                    >
-                      {isLoading ? (
-                        <Loader2 size={15} className="animate-spin" />
-                      ) : (
-                        'Add to Cart'
-                      )}
+              <div>
+                <Dialog onOpenChange={setShowDialog} open={showDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="text-sm tracking-tight scroll-m-20 mt-4">
+                      Buy Ticket
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Buy Ticket</DialogTitle>
+                      <DialogDescription></DialogDescription>
+                    </DialogHeader>
+                    {loadingEventOptions ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Select
+                        onValueChange={(val) => {
+                          let obj = JSON.parse(val);
+                          setSelectOption({
+                            id: obj.id,
+                            name: obj.name,
+                            price: +obj.price,
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Select an option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Options</SelectLabel>
+                            {/* @ts-ignore */}
+                            {eventOptions.map(
+                              ({
+                                optionId,
+                                optionName,
+                                optionPrice,
+                                ticketStock,
+                              }) => {
+                                return (
+                                  <SelectItem
+                                    key={optionId}
+                                    value={JSON.stringify({
+                                      id: optionId,
+                                      name: optionName,
+                                      price: optionPrice,
+                                    })}
+                                    className="flex"
+                                    disabled={ticketStock === 0 ? true : false}
+                                  >
+                                    {optionName?.toUpperCase()}
+                                    {ticketStock === 0
+                                      ? '---SOLD OUT'
+                                      : `---${ticketStock} left`}
+                                  </SelectItem>
+                                );
+                              }
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <div className="space-y-2">
+                      <p>quantity</p>
+                      <Input
+                        type="number"
+                        // min={1}
+                        // max={3}
+                        value={quantity}
+                        onChange={(e) => {
+                          setQuantity(+e.target.value);
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <small className="text-sm font-medium leading-none">
+                        price
+                      </small>
+                      <p>
+                        {new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        }).format(selectedOption.price || 0)}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <small className="text-sm font-medium leading-none">
+                        total
+                      </small>
+                      <p>
+                        {new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        }).format(selectedOption.price * quantity)}
+                      </p>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={(e) => {
+                          if (quantity >= 1 && quantity <= TICKETS_LIMIT)
+                            addTicketToCartHandler(e);
+                          else toast(`tickets: min 1, max ${TICKETS_LIMIT}`);
+                        }}
+                        type="submit"
+                        className="flex justify-center text-center"
+                      >
+                        {isLoading ? (
+                          <Loader2 size={15} className="animate-spin" />
+                        ) : (
+                          'Add to Cart'
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+                <p className="text-xs mt-2 text-center">
+                  starts at{' '}
+                  <span className="font-semibold">{formatPrice(minPrice)}</span>
+                </p>
+              </div>
             )}
             <p
-              className={cn('text-xs', {
+              className={cn('text-xs mt-3', {
                 'text-red-500 font-semibold': totalSeconds / 3600 <= 24,
               })}
             >
               {!expiredEvent
                 ? `${days}d:${hours}h:${minutes}m:${seconds}s`
-                : 'finished'}
+                : 'expired'}
             </p>
           </div>
         </CardContent>

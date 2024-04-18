@@ -2,25 +2,33 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyJWT } from './actions/verifyJWT';
 
-const publicRoutes = ['/', '/register'];
+const authRoutes = ['/login', '/register'];
+const publicRoutes = ['/', '/events'];
 
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const token = request.cookies.get('jwt')?.value;
-  if (!token) return;
 
   const payload = await verifyJWT(token!);
   const loggedIn = !!token && !!payload;
 
-  console.log(loggedIn);
+  let isApiRoute = url.pathname.startsWith('/api');
+  let isAuthRoute = authRoutes.includes(url.pathname);
+  let isPublicRoute = publicRoutes.includes(url.pathname);
 
-  if (!loggedIn)
-    if (url.pathname !== '/login' && url.pathname !== '/register')
-      return NextResponse.redirect(new URL('/login', request.url));
+  if (isApiRoute) return null;
 
-  return NextResponse.next();
+  if (isAuthRoute) {
+    if (loggedIn) return NextResponse.redirect(new URL(`/`, request.url));
+    return null;
+  }
+
+  if (!loggedIn && !isPublicRoute)
+    return NextResponse.redirect(new URL(`/login`, request.url));
+
+  return null;
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };
