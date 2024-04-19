@@ -19,15 +19,15 @@ export const tickets: Ticket[] = [
   },
   // REAL MADRID Semi-Finals Leg 1 of 2
   {
-    ticketId: '', // BASIC
+    ticketId: 'e2607883-d141-43e9-a9dd-610ff95c8603', // BASIC
     stripePriceId: 'price_1P7GEtGaTqN0NXIPh2I6HLHe',
   },
   {
-    ticketId: '', // VIP PREMIUM PLAYERS ZONE
+    ticketId: '04a07a43-b744-4438-a3f4-8156354b1ea5', // VIP PREMIUM PLAYERS ZONE
     stripePriceId: 'price_1P7GFNGaTqN0NXIPqfCpD8gc',
   },
   {
-    ticketId: '', // VIP PREMIUM HONOR ZONE
+    ticketId: '990acdb1-11a5-4d3d-907e-9046de4eb31a', // VIP PREMIUM HONOR ZONE
     stripePriceId: 'price_1P7GGWGaTqN0NXIPl2xggEW3',
   },
 ];
