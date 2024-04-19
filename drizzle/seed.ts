@@ -7,13 +7,12 @@ async function main() {
   console.log('seeding starts');
 
   let event: typeof events.$inferInsert = {
-    name: 'Real Madrid vs Man City',
-    description:
-      'Quarter-Final Leg 2 of 2 Aggregate(3-3) UEFA Champions League',
-    time: new Date(1713384000000),
-    location: 'Etihad Stadium',
+    name: 'Real Madrid vs Bayern Munich',
+    description: 'UEFA Champions League Semi-Finals Leg 1 of 2',
+    time: new Date(1714503600000),
+    location: 'Allianz Arena',
     thumbnail:
-      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2FWhy-Real-Madrid-drawing-Manchester-City-in-Champions-League-Quarterfinals-is-a-nightmare.jpg?alt=media&token=d7850d42-17ff-4233-8f80-6fe7281ca001',
+      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2FGLZe_OKb0AArs92.jpeg?alt=media&token=53ea961d-58a8-4c59-a939-416727cc0bba',
   };
 
   try {
@@ -27,12 +26,12 @@ async function main() {
       },
       {
         name: 'vip premium players zone',
-        price: '175',
+        price: '129',
         eventId: newEvent[0].id,
       },
       {
         name: 'vip premium honor zone',
-        price: '295',
+        price: '175',
         eventId: newEvent[0].id,
       },
     ];
