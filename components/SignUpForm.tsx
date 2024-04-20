@@ -159,168 +159,184 @@ function SignUpForm() {
   }
 
   return (
-    <div className="">
-      <form
-        action={async (formData) => {
-          let email = formData.get('email') as string;
-          emailFormHandler(email);
-          setEmail(email);
+    <div className="flex flex-col-reverse border rounded-lg shadow-lg">
+      <div
+        className="bg-cover bg-center h-[400px] flex justify-center items-center p-5"
+        style={{
+          backgroundImage:
+            "url('https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/login%2Faditya-chinchure-ZhQCZjr9fHo-unsplash.jpg?alt=media&token=ca80ff84-5285-435b-a194-c57f0021e1ca')",
         }}
-        className="grid grid-cols-2 items-center my-5 space-y-4"
       >
-        <Label htmlFor="email">email</Label>
-        <input
-          type="email"
-          name="email"
-          autoComplete="off"
-          className={cn('border rounded-lg py-1 px-3', {
-            'border-red-500': validEmail === false,
-            'border-green-500': validEmail,
-          })}
-          placeholder="name@contact.ma"
-        />
-        {showOTPInput && !validOtp && (
-          <div className="space-y-2 col-span-2">
-            <InputOTP
-              maxLength={6}
-              pattern={REGEXP_ONLY_DIGITS}
-              className=""
-              value={otpCode}
-              onChange={(value) => {
-                setOtpCode(value);
-              }}
-            >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-            <div className="text-sm text-gray-800">
-              Enter your one-time password.
-            </div>
-            {showTimer && (
-              <>
-                <span>didn&apos;t receive the code?</span>
-                <button
-                  disabled={isRunning}
-                  className="font-medium ml-2 mr-4"
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    // if number of tries is 3, return and show a message of 'you reached max number of tries'
-                    if (tries === 3)
-                      return toast('you reached max number of tries');
-
-                    const newSendingResult = await sendOtp(email);
-                    if (newSendingResult?.messageId)
-                      setSentOtp(newSendingResult.otp);
-                    setTries((prevTry) => prevTry + 1);
-                    new Promise((resolve, reject) => {
-                      resolve('timer restarted');
-                    }).then((val) => restart(time));
-                  }}
-                >
-                  try again after
-                </button>
-                <span className="text-sm">
-                  <span>{minutes}</span>
-                  <span>:</span>
-                  <span>{seconds}</span>
-                </span>
-              </>
-            )}
-          </div>
-        )}
-        {!validOtp && <SendOtpSubmitBtn />}
-      </form>
-      {validOtp && (
+        <h1 className="text-white text-4xl font-semibold tracking-tight scroll-m-20 text-center mix-blend-overlay">
+          Moments You Don&apos;t Wanna Miss
+        </h1>
+      </div>
+      <div className="w-full flex flex-col justify-center items-center p-5">
+        <h1 className="font-semibold tracking-tight text-2xl scroll-m-20">
+          Create your Account
+        </h1>
         <form
-          action={async (formData: FormData) => {
-            const state = await signup(null, formData, email);
-            setFormState(state);
+          action={async (formData) => {
+            let email = formData.get('email') as string;
+            emailFormHandler(email);
+            setEmail(email);
           }}
-          className="grid grid-cols-2 gap-y-4"
+          className="grid grid-cols-2 items-center my-5 space-y-4"
         >
-          <Label htmlFor="gender">gender</Label>
-          <select
-            name="gender"
-            className={cn(`border py-1 px-3 rounded-lg`, {
-              'border border-red-500': formState?.errors?.gender,
-            })}
-          >
-            <option value="" disabled>
-              please select a gender
-            </option>
-            <option value="male">male</option>
-            <option value={'female'}>female</option>
-          </select>
-          <Label htmlFor="firstname">firstname</Label>
+          <Label htmlFor="email">email</Label>
           <input
-            type="text"
-            name="firstname"
+            type="email"
+            name="email"
             autoComplete="off"
-            className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': formState?.errors?.firstname,
+            className={cn('border rounded-lg py-1 px-3 !mt-0', {
+              'border-red-500': validEmail === false,
+              'border-green-500': validEmail,
             })}
+            placeholder="name@contact.ma"
           />
-          <Label htmlFor="lastname">lastname</Label>
-          <input
-            type="text"
-            name="lastname"
-            autoComplete="off"
-            className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': formState?.errors?.lastname,
-            })}
-          />
-          <Label htmlFor="cin">cin</Label>
-          <input
-            type="text"
-            name="cin"
-            autoComplete="off"
-            className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': formState?.errors?.cin,
-            })}
-          />
-          <Label htmlFor="birthdate">birthdate</Label>
-          <input
-            type="date"
-            name="birthdate"
-            className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': formState?.errors?.birthdate,
-            })}
-          />
-          <Label htmlFor="city">city</Label>
-          <select
-            name="city"
-            className={cn('border rounded-lg py-1 px-3', {
-              'border border-red-500': formState?.errors?.city,
-            })}
-          >
-            <option value="" disabled>
-              please select a city
-            </option>
-            {cities?.map((city, i) => (
-              <option key={i} value={city.name.toLowerCase()}>
-                {city.name}
-              </option>
-            ))}
-          </select>
-          <PhoneNumberInput state={formState} />
-          <SignupSubmitBtn isRunning={isRunning} />
+          {showOTPInput && !validOtp && (
+            <div className="space-y-2 col-span-2">
+              <InputOTP
+                maxLength={6}
+                pattern={REGEXP_ONLY_DIGITS}
+                className=""
+                value={otpCode}
+                onChange={(value) => {
+                  setOtpCode(value);
+                }}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <div className="text-sm text-gray-800">
+                Enter your one-time password.
+              </div>
+              {showTimer && (
+                <>
+                  <span>didn&apos;t receive the code?</span>
+                  <button
+                    disabled={isRunning}
+                    className="font-medium ml-2 mr-4"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      // if number of tries is 3, return and show a message of 'you reached max number of tries'
+                      if (tries === 3)
+                        return toast('you reached max number of tries');
+
+                      const newSendingResult = await sendOtp(email);
+                      if (newSendingResult?.messageId)
+                        setSentOtp(newSendingResult.otp);
+                      setTries((prevTry) => prevTry + 1);
+                      new Promise((resolve, reject) => {
+                        resolve('timer restarted');
+                      }).then((val) => restart(time));
+                    }}
+                  >
+                    try again after
+                  </button>
+                  <span className="text-sm">
+                    <span>{minutes}</span>
+                    <span>:</span>
+                    <span>{seconds}</span>
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+          {!validOtp && <SendOtpSubmitBtn />}
         </form>
-      )}
-      <p className="mt-4 text-sm col-span-2">
-        <span className="mr-1">already have an account,</span>
-        <Link href={'/login'} className="font-bold">
-          login!
-        </Link>
-      </p>
+        {validOtp && (
+          <form
+            action={async (formData: FormData) => {
+              const state = await signup(null, formData, email);
+              setFormState(state);
+            }}
+            className="grid grid-cols-2 gap-y-4"
+          >
+            <Label htmlFor="gender">gender</Label>
+            <select
+              name="gender"
+              className={cn(`border py-1 px-3 rounded-lg`, {
+                'border border-red-500': formState?.errors?.gender,
+              })}
+            >
+              <option value="" disabled>
+                please select a gender
+              </option>
+              <option value="male">male</option>
+              <option value={'female'}>female</option>
+            </select>
+            <Label htmlFor="firstname">firstname</Label>
+            <input
+              type="text"
+              name="firstname"
+              autoComplete="off"
+              className={cn('border rounded-lg py-1 px-3', {
+                'border border-red-500': formState?.errors?.firstname,
+              })}
+            />
+            <Label htmlFor="lastname">lastname</Label>
+            <input
+              type="text"
+              name="lastname"
+              autoComplete="off"
+              className={cn('border rounded-lg py-1 px-3', {
+                'border border-red-500': formState?.errors?.lastname,
+              })}
+            />
+            <Label htmlFor="cin">cin</Label>
+            <input
+              type="text"
+              name="cin"
+              autoComplete="off"
+              className={cn('border rounded-lg py-1 px-3', {
+                'border border-red-500': formState?.errors?.cin,
+              })}
+            />
+            <Label htmlFor="birthdate">birthdate</Label>
+            <input
+              type="date"
+              name="birthdate"
+              className={cn('border rounded-lg py-1 px-3', {
+                'border border-red-500': formState?.errors?.birthdate,
+              })}
+            />
+            <Label htmlFor="city">city</Label>
+            <select
+              name="city"
+              className={cn('border rounded-lg py-1 px-3', {
+                'border border-red-500': formState?.errors?.city,
+              })}
+            >
+              <option value="" disabled>
+                please select a city
+              </option>
+              {cities?.map((city, i) => (
+                <option key={i} value={city.name.toLowerCase()}>
+                  {city.name}
+                </option>
+              ))}
+            </select>
+            <PhoneNumberInput state={formState} />
+            <SignupSubmitBtn isRunning={isRunning} />
+          </form>
+        )}
+        <p className="text-xs col-span-2">
+          <span className="mr-1">already have an account,</span>
+          <Link href={'/login'} className="font-bold">
+            login!
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
