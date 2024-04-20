@@ -58,7 +58,7 @@ export const formatPrice = (price: number, currency: string = 'USD') =>
 
 export const getUrl = (path: string = '/') => {
   let url =
-    MODE === 'prod'
+    MODE === 'dev'
       ? `http://localhost:3000`
       : 'https://tadakirnet-clone.vercel.app';
   url += path;

@@ -1,0 +1,579 @@
+{
+  "id": "7e9600d8-5d54-42b9-8ff0-03853d227a95",
+  "prevId": "8c805789-a35b-4bab-aced-58c88b153774",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "cart": {
+      "name": "cart",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "cart_items": {
+      "name": "cart_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cart_id": {
+          "name": "cart_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "claims": {
+      "name": "claims",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "subject": {
+          "name": "subject",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "event_options": {
+      "name": "event_options",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "events": {
+      "name": "events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "time": {
+          "name": "time",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "thumbnail": {
+          "name": "thumbnail",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "order_items": {
+      "name": "order_items",
+      "schema": "",
+      "columns": {
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "order_id": {
+          "name": "order_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "order_items_order_id_orders_id_fk": {
+          "name": "order_items_order_id_orders_id_fk",
+          "tableFrom": "order_items",
+          "tableTo": "orders",
+          "columnsFrom": [
+            "order_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "order_items_ticket_id_tickets_id_fk": {
+          "name": "order_items_ticket_id_tickets_id_fk",
+          "tableFrom": "order_items",
+          "tableTo": "tickets",
+          "columnsFrom": [
+            "ticket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "order_items_order_id_ticket_id_pk": {
+          "name": "order_items_order_id_ticket_id_pk",
+          "columns": [
+            "order_id",
+            "ticket_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {}
+    },
+    "orders": {
+      "name": "orders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "status",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'open'"
+        },
+        "total": {
+          "name": "total",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "tickets": {
+      "name": "tickets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "stock": {
+          "name": "stock",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "option_id": {
+          "name": "option_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_price_id": {
+          "name": "stripe_price_id",
+          "type": "varchar(31)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "gender": {
+          "name": "gender",
+          "type": "gender",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "firstname": {
+          "name": "firstname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastname": {
+          "name": "lastname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cin": {
+          "name": "cin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "birthdate": {
+          "name": "birthdate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "unique_idx": {
+          "name": "unique_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_cin_unique": {
+          "name": "users_cin_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cin"
+          ]
+        },
+        "users_phone_unique": {
+          "name": "users_phone_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phone"
+          ]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {
+    "gender": {
+      "name": "gender",
+      "values": {
+        "male": "male",
+        "female": "female"
+      }
+    },
+    "status": {
+      "name": "status",
+      "values": {
+        "complete": "complete",
+        "expired": "expired",
+        "open": "open"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
