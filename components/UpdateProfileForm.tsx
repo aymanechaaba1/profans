@@ -29,7 +29,7 @@ function SignupSubmitBtn() {
     <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 text-white py-2 rounded-lg flex justify-center items-center"
+      className="col-span-2 py-2 rounded-lg flex justify-center items-center tracking-tight"
     >
       {pending ? (
         <Loader2 className="animate-spin my-1" size={15} color="white" />

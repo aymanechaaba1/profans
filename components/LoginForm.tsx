@@ -20,6 +20,7 @@ import { validateEmail } from '@/actions/validateEmail';
 import { useFormStatus } from 'react-dom';
 import { Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 export type LoginFormState = {
   ok: boolean;
@@ -94,20 +95,36 @@ function LoginForm() {
   }, [activeTab, otpCode, sentOtp, userId]);
 
   return (
-    <>
+    <div className="flex flex-col-reverse border rounded-lg shadow-lg">
+      <div
+        className="bg-cover bg-center h-[400px] flex justify-center items-center p-5"
+        style={{
+          backgroundImage:
+            "url('https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/login%2Faditya-chinchure-ZhQCZjr9fHo-unsplash.jpg?alt=media&token=ca80ff84-5285-435b-a194-c57f0021e1ca')",
+        }}
+      >
+        <h1 className="text-white text-4xl font-semibold tracking-tight scroll-m-20 text-center mix-blend-overlay">
+          Moments You Don&apos;t Wanna Miss
+        </h1>
+      </div>
       <Tabs
         defaultValue={activeTab}
         onValueChange={(val) => setActiveTab(val as 'email' | 'phone')}
-        className="mt-5"
+        className="w-full p-5 flex flex-col justify-center items-center gap-y-4"
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <h1 className="font-semibold tracking-tight text-2xl scroll-m-20">
+          Login to Your Account
+        </h1>
+        <TabsList className="mx-auto">
           <TabsTrigger value="email">email</TabsTrigger>
-          <TabsTrigger value="phone">phone</TabsTrigger>
+          <TabsTrigger value="phone" disabled>
+            phone
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="email">
           <form
             action={loginWithEmail}
-            className="grid grid-cols-2 gap-x-4 my-5"
+            className="grid items-center grid-cols-2 gap-x-4"
           >
             <label htmlFor="email">email</label>
             <input
@@ -162,14 +179,14 @@ function LoginForm() {
             </button>
           </form> */}
         </TabsContent>
-        <p className="mt-4 text-sm col-span-2">
+        <p className="text-xs col-span-2">
           don&apos;t have an account yet,{' '}
           <Link href={'/register'} className="font-bold">
             create one!
           </Link>
         </p>
       </Tabs>
-    </>
+    </div>
   );
 }
 
