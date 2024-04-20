@@ -54,6 +54,7 @@ export const tickets = pgTable('tickets', {
   stock: integer('stock').default(0),
   eventId: uuid('event_id'),
   optionId: uuid('option_id').notNull(),
+  stripePriceId: varchar('stripe_price_id', { length: 31 }).default(''),
 });
 
 export const events = pgTable('events', {

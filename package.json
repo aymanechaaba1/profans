@@ -11,7 +11,8 @@
     "db:generate": "drizzle-kit generate:pg --schema ./drizzle/schema.ts --out=./drizzle/migrations",
     "db:migrate": "node -r esbuild-register drizzle/migrate.ts",
     "db:seed": "node -r esbuild-register drizzle/seed.ts",
-    "db:push": "drizzle-kit push:pg"
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
@@ -23,6 +24,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@react-pdf/renderer": "^3.4.2",
@@ -80,7 +82,7 @@
     "@types/react-timeago": "^4.1.7",
     "@types/speakeasy": "^2.0.10",
     "autoprefixer": "^10.0.1",
-    "drizzle-kit": "^0.20.14",
+    "drizzle-kit": "^0.20.16",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
     "postcss": "^8",

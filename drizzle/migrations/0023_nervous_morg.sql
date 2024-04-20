@@ -1,0 +1,1 @@
+ALTER TABLE "tickets" ADD COLUMN "stripe_price_id" varchar(31) DEFAULT '';

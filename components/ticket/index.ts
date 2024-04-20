@@ -93,6 +93,9 @@ export const Ticket = async (orderItem: typeof orderItems.$inferSelect) => {
               <p class="font-semibold tracking-tight scroll-m-20 text-right">
                 ${data.ticket.eventOption.event.name}
               </p>
+              <p class="font-semibold tracking-tight scroll-m-20 text-right">
+              ${data.ticket.eventOption.event.location}
+            </p>
               <p class="text-xs text-slate-400 tracking-tight scroll-m-20 text-right">
                 ${data.ticket.eventOption.event.description}
               </p>

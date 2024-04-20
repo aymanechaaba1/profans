@@ -6,13 +6,14 @@ import CheckoutBtn from './CheckoutBtn';
 import { getCartTotal } from '@/lib/utils';
 import { Separator } from './ui/separator';
 import db from '@/drizzle';
+import { getTickets } from '@/actions/getTickets';
 
 async function Cart({
   basket,
 }: {
   basket: Awaited<ReturnType<typeof getCart>>;
 }) {
-  const total = await getCartTotal();
+  const [total, tickets] = await Promise.all([getCartTotal(), getTickets()]);
 
   if (basket)
     return (
@@ -25,7 +26,7 @@ async function Cart({
           <div className="md:w-1/3">
             <CartTotal total={total} />
             {basket.items.length > 0 && (
-              <CheckoutBtn basketItems={basket.items} />
+              <CheckoutBtn basketItems={basket.items} tickets={tickets} />
             )}
           </div>
         </div>

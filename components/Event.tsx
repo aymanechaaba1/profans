@@ -252,7 +252,7 @@ function Event({
           </div>
           <div className="flex items-center gap-x-2">
             <Clock size={13} />
-            <p className="text-gray-900 text-xs">
+            <p className="text-gray-900 dark:text-slate-100 text-xs">
               {new Intl.DateTimeFormat('en-US', {
                 month: '2-digit',
                 day: '2-digit',

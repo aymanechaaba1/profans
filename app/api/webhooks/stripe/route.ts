@@ -6,7 +6,6 @@ import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
-import { tickets as TICKETS } from '@/tickets';
 import { Ticket } from '@/components/ticket';
 import { getPdfBuffer } from '@/actions/getPdfBuffer';
 import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
@@ -15,6 +14,7 @@ import { sendToEmail } from '@/actions/sendToEmail';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 import type Stripe from 'stripe';
+import { getTickets } from '@/actions/getTickets';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
           });
 
         // add new order to db
-        const [newOrder, lineItems] = await Promise.all([
+        const [newOrder, lineItems, _tickets] = await Promise.all([
           db
             .insert(orders)
             .values({
@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
             })
             .returning(),
           stripe.checkout.sessions.listLineItems(checkoutSessionCompleted.id),
+          getTickets(),
         ]);
 
         if (!newOrder) return;
@@ -79,17 +80,18 @@ export async function POST(req: NextRequest) {
         let items: (typeof orderItems.$inferSelect)[] = [];
         await Promise.all(
           lineItems.data.map(async (lineItem) => {
-            items = await db
+            let item = await db
               .insert(orderItems)
               .values({
                 orderId: newOrder[0].id,
-                ticketId: TICKETS.find(
+                ticketId: _tickets.find(
                   (ticket) => ticket.stripePriceId === lineItem?.price?.id
-                )?.ticketId!,
+                )?.id!,
                 quantity: lineItem.quantity || 0,
                 total: (lineItem.amount_total / 100).toString(),
               })
               .returning();
+            items.push(item[0]);
           })
         );
 
@@ -158,11 +160,13 @@ async function sendTickets(
       if (!ticket) return;
 
       let pdfBuffer = await getPdfBuffer(ticket);
+
       let path = `/tickets/${user.id}/${item.orderId}_${item.ticketId}_${i}.pdf`;
       await uploadPdfToFirebase({
         path,
         pdfBuffer,
       });
+
       let url = await getDownloadURL(ref(storage, path));
       urls.push(url);
     }

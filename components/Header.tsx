@@ -14,6 +14,10 @@ import Link from 'next/link';
 import db from '@/drizzle';
 import { getSession } from '@/actions/getSession';
 import { getCachedUser, getUser } from '@/lib/utils';
+import Image from 'next/image';
+import { Label } from './ui/label';
+import { Switch } from './ui/switch';
+import SwitchMode from './SwitchMode';
 
 async function Header() {
   const user = await getUser();
@@ -22,12 +26,20 @@ async function Header() {
     <div className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 max-w-screen-2xl items-center container gap-x-4">
         {/* logo */}
-        <Link href={'/'}>logo</Link>
+        <Link href={'/'}>
+          <Image
+            src={`https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/tadakirnet-clone%20logo2.png?alt=media&token=1518680c-5586-4e8f-a44a-d8fb1aadf408`}
+            height={100}
+            width={100}
+            alt="logo"
+            className="object-cover dark:invert"
+          />
+        </Link>
         {/* links */}
         <nav className="flex-1 flex items-center gap-4 text-sm lg:gap-6">
           <Link
             href={'/events'}
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
+            className="transition-colors hover:text-foreground/80 text-foreground/60 tracking-tight scroll-m-20"
           >
             events
           </Link>
@@ -57,9 +69,12 @@ async function Header() {
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuItem>
-                  <Link href={`/account`}>account</Link>
+                  <Link href={`/account`}>Account</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem className="flex items-center justify-between">
+                  <SwitchMode />
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
                   <form action={logout}>

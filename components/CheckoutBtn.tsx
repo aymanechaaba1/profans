@@ -7,10 +7,10 @@ import { useRouter } from 'next/navigation';
 import { createCheckoutSession } from '@/actions/createCheckoutSession';
 import Stripe from 'stripe';
 import { cartItems } from '@/drizzle/schema';
-import { tickets } from '@/tickets';
 import { useEffect, useState } from 'react';
 import { CheckoutSessionPayload } from '@/types/stripe';
 import { useFormState, useFormStatus } from 'react-dom';
+import { getTickets } from '@/actions/getTickets';
 
 function Btn() {
   const { pending } = useFormStatus();
@@ -30,20 +30,19 @@ function Btn() {
 }
 
 function CheckoutBtn({
+  tickets,
   basketItems,
 }: {
+  tickets: Awaited<ReturnType<typeof getTickets>>;
   basketItems: (typeof cartItems.$inferSelect)[];
 }) {
   const [state, formAction] = useFormState(createCheckoutSession, null);
+  console.log(tickets);
 
-  console.log(
-    'price_1P6u8PGaTqN0NXIP2JA9UbFa' === 'price_1P6u8PGaTqN0NXIP2JA9UbFa'
-  );
-  console.log('TICKETS', tickets);
   let lineItems = basketItems.map((item) => {
-    let ticket = tickets.find((ticket) => ticket.ticketId === item.ticketId);
-    console.log('TICKET', ticket);
+    let ticket = tickets.find((ticket) => ticket.id === item.ticketId);
     if (!ticket || !ticket.stripePriceId) return;
+
     return {
       quantity: item.quantity,
       price: ticket.stripePriceId,
