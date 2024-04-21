@@ -223,7 +223,7 @@ function SignUpForm() {
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <div className="text-xs text-gray-800 text-center">
+              <div className="text-xs text-gray-800 dark:text-slate-200 text-center">
                 Enter your one-time password.
               </div>
               {showTimer && (
