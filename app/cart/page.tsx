@@ -7,7 +7,7 @@ async function CartPage() {
   const user = await getUser();
 
   return (
-    <div className="">
+    <div className="container">
       <Cart basket={user?.cart} />
     </div>
   );

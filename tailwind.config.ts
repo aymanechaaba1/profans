@@ -18,6 +18,10 @@ const config = {
       },
     },
     extend: {
+      backgroundImage: (theme) => ({
+        'gradient-radial':
+          'radial-gradient(31.2% 40.91% at 50% 151.14%, rgba(186, 214, 247, .08) 0, rgba(186, 214, 247, 0) 100%), rgba(186, 214, 247, .06)',
+      }),
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
