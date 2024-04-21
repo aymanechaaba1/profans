@@ -12,9 +12,9 @@ async function AccountPage() {
 
   if (user)
     return (
-      <>
+      <div className="container">
         <AccountTabs userClaims={user.claims} userOrders={orders} />
-      </>
+      </div>
     );
 }
 

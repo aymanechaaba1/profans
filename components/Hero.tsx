@@ -3,7 +3,7 @@ import Image from 'next/image';
 function Hero() {
   return (
     <div
-      className="bg-cover bg-center h-[400px] flex justify-end items-end p-5 absolute w-full top-[60px] left-0"
+      className="bg-cover bg-center h-[400px] flex justify-end items-end p-5 w-full"
       style={{
         backgroundImage:
           "url('https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/login%2F25ed78196394243.661f445a902c1.jpg?alt=media&token=468b8e6e-7fd0-47e1-a16e-1e79b301787c')",

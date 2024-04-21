@@ -135,11 +135,11 @@ function LoginForm() {
               placeholder="name@contact.ma"
             />
             {showOtpInput && (
-              <div className="mt-4">
+              <div className="mt-4 col-span-2 mx-auto">
                 <InputOTP
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS}
-                  className="col-span-2"
+                  className="w-full"
                   value={otpCode}
                   onChange={(val) => setOtpCode(val)}
                 >
@@ -155,7 +155,7 @@ function LoginForm() {
                     <InputOTPSlot index={5} />
                   </InputOTPGroup>
                 </InputOTP>
-                <p className="text-xs text-gray-800 mt-3">
+                <p className="text-xs text-gray-800 mt-3 text-center">
                   Enter your one-time password.
                 </p>
               </div>

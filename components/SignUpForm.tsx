@@ -195,7 +195,7 @@ function SignUpForm() {
             placeholder="name@contact.ma"
           />
           {showOTPInput && !validOtp && (
-            <div className="space-y-2 col-span-2">
+            <div className="space-y-2 col-span-2 mx-auto">
               <InputOTP
                 maxLength={6}
                 pattern={REGEXP_ONLY_DIGITS}
@@ -217,7 +217,7 @@ function SignUpForm() {
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <div className="text-sm text-gray-800">
+              <div className="text-xs text-gray-800 text-center">
                 Enter your one-time password.
               </div>
               {showTimer && (

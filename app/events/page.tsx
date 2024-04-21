@@ -11,7 +11,7 @@ async function EventsPage() {
   ]);
 
   return (
-    <div>
+    <div className="container">
       <Events upcomingEvents={upcomingEvents} passedEvents={passedEvents} />
     </div>
   );
