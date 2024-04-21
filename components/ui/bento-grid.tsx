@@ -35,7 +35,7 @@ export const BentoGridItem = ({
   return (
     <div
       className={cn(
-        'row-span-1 rounded-2xl group/bento hover:shadow-xl transition duration-200 shadow-input p-4 bg-white border justify-between flex flex-col space-y-4 dark:card-wrapper !h-[150px] md:!h-[160px]',
+        'row-span-1 rounded-2xl group/bento hover:shadow-xl transition duration-200 shadow-input p-4 bg-white border justify-between flex flex-col space-y-4 dark:card-wrapper !h-[140px] md:!h-[150px] lg:!h-[140px]',
         className
       )}
     >
