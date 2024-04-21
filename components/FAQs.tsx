@@ -46,21 +46,25 @@ const faqs: FAQ[] = [
 
 function FAQs() {
   return (
-    <div className="backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/60 py-5">
-      <div className="container">
-        <h2 className="text-2xl font-semibold tracking-tight scroll-m-20">
-          FAQs
-        </h2>
-        <Accordion type="single" collapsible className="w-full">
-          {faqs.map((faq, i) => (
-            <AccordionItem key={faq.id} value={`item-${i + 1}`}>
-              <AccordionTrigger className="text-left">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent>{faq.answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+    <div className="container my-5">
+      <div className="backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/60 border rounded-2xl py-4">
+        <div className="container">
+          <h2 className="text-2xl font-semibold tracking-tight scroll-m-20">
+            FAQs
+          </h2>
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.map((faq, i) => (
+              <AccordionItem key={faq.id} value={`item-${i + 1}`}>
+                <AccordionTrigger className="text-left hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="dark:text-slate-200">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
     </div>
   );

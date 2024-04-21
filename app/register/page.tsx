@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 async function RegisterPage() {
   return (
-    <>
+    <div className="container">
       <SignUpForm />
-    </>
+    </div>
   );
 }
 

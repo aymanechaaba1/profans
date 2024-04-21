@@ -63,10 +63,13 @@ function SendOtpSubmitBtn() {
     <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 text-white py-2 rounded-lg flex justify-center"
+      className="col-span-2 py-2 rounded-lg flex justify-center"
     >
       {pending ? (
-        <Loader2 className="animate-spin my-1" size={15} color="white" />
+        <Loader2
+          className="animate-spin my-1 text-white dark:text-gray-900"
+          size={15}
+        />
       ) : (
         'next'
       )}
@@ -81,7 +84,7 @@ function SignupSubmitBtn({ isRunning }: { isRunning?: boolean }) {
     <Button
       type="submit"
       disabled={pending}
-      className="col-span-2 text-white py-2 rounded-lg flex justify-center items-center"
+      className="col-span-2 py-2 rounded-lg flex justify-center items-center"
     >
       {pending ? (
         <Loader2 className="animate-spin my-1" size={15} color="white" />
@@ -188,10 +191,13 @@ function SignUpForm() {
             type="email"
             name="email"
             autoComplete="off"
-            className={cn('border rounded-lg py-1 px-3 !mt-0', {
-              'border-red-500': validEmail === false,
-              'border-green-500': validEmail,
-            })}
+            className={cn(
+              'border rounded-lg py-1 px-3 !mt-0 dark:bg-gray-900',
+              {
+                'border-red-500': validEmail === false,
+                'border-green-500': validEmail,
+              }
+            )}
             placeholder="name@contact.ma"
           />
           {showOTPInput && !validOtp && (

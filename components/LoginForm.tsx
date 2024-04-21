@@ -37,11 +37,14 @@ function LoginSubmitButton() {
   return (
     <Button
       type="submit"
-      className="col-span-2 text-white py-2 rounded-lg mt-4 flex justify-center"
+      className="col-span-2 py-2 rounded-lg mt-4 flex justify-center"
       disabled={pending}
     >
       {pending ? (
-        <Loader2 className="animate-spin" size={15} color="white" />
+        <Loader2
+          className="animate-spin text-white dark:text-gray-900"
+          size={15}
+        />
       ) : (
         'login'
       )}
@@ -131,7 +134,7 @@ function LoginForm() {
               type="email"
               name="email"
               autoComplete="off"
-              className={cn('border rounded-lg py-1 px-3')}
+              className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900')}
               placeholder="name@contact.ma"
             />
             {showOtpInput && (
