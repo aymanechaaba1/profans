@@ -158,7 +158,7 @@ function LoginForm() {
                     <InputOTPSlot index={5} />
                   </InputOTPGroup>
                 </InputOTP>
-                <p className="text-xs text-gray-800 mt-3 text-center">
+                <p className="text-xs text-gray-800 dark:text-slate-200 mt-3 text-center">
                   Enter your one-time password.
                 </p>
               </div>

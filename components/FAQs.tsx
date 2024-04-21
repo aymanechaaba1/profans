@@ -46,9 +46,9 @@ const faqs: FAQ[] = [
 
 function FAQs() {
   return (
-    <div className="container my-5">
-      <div className="backdrop-blur bg-background/95 supports-[backdrop-filter]:bg-background/60 border rounded-2xl py-4">
-        <div className="container">
+    <div className="container">
+      <div className="my-5 border rounded-2xl">
+        <div className="p-5">
           <h2 className="text-2xl font-semibold tracking-tight scroll-m-20">
             FAQs
           </h2>
