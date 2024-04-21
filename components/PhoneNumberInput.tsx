@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { MapboxReverseGeocodingData } from '@/types/mapbox';
 import useSession from '@/hooks/useSession';
+import { Input } from './ui/input';
 
 function PhoneNumberInput({
   state,
@@ -67,46 +68,43 @@ function PhoneNumberInput({
   return (
     <>
       <Label htmlFor="phone">phone number</Label>
-      <div
-        className={cn('flex items-center gap-x-4', {
-          'border border-red-500': state?.errors?.birthdate,
-        })}
-      >
-        {isLoading && <Loader2 className="animate-spin" size={15} />}
-        {countries && (
-          <div className="flex items-center gap-x-4">
-            <Select name="calling_code" defaultValue={`+212`}>
-              <SelectTrigger className="">
-                <SelectValue placeholder="Select your country" />
-              </SelectTrigger>
-              <SelectContent>
-                {countries?.map(
-                  (country, i) =>
-                    country.idd.root &&
-                    country.idd.suffixes?.[0] && (
-                      <SelectItem
-                        key={i}
-                        value={`${country.idd.root}${country.idd.suffixes?.[0]}`}
-                      >
-                        {`${country.idd.root}${country.idd.suffixes?.[0]}`}
-                      </SelectItem>
-                    )
-                )}
-              </SelectContent>
-            </Select>
-            <input
-              type="phone"
-              name="phone"
-              autoComplete="off"
-              defaultValue={user?.phone.slice(4)}
-              className={cn('outline-none bg-transparent flex-1', {
+      {isLoading && <Loader2 className="animate-spin" size={15} />}
+      {countries && (
+        <div className="grid grid-cols-2 md:gap-x-4">
+          <Select name="calling_code" defaultValue={`+212`}>
+            <SelectTrigger className="w-[80px] md:w-full text-xs md:text-base">
+              <SelectValue placeholder="Select your country" />
+            </SelectTrigger>
+            <SelectContent>
+              {countries?.map(
+                (country, i) =>
+                  country.idd.root &&
+                  country.idd.suffixes?.[0] && (
+                    <SelectItem
+                      key={i}
+                      value={`${country.idd.root}${country.idd.suffixes?.[0]}`}
+                    >
+                      {`${country.idd.root}${country.idd.suffixes?.[0]}`}
+                    </SelectItem>
+                  )
+              )}
+            </SelectContent>
+          </Select>
+          <input
+            type="phone"
+            name="phone"
+            autoComplete="off"
+            defaultValue={user?.phone.slice(4)}
+            className={cn(
+              'outline-none bg-transparent border rounded-lg px-3 text-xs md:text-base flex-1',
+              {
                 'border-red-500': state?.errors?.phone,
-              })}
-              placeholder="615875849"
-            />
-          </div>
-        )}
-      </div>
+              }
+            )}
+            placeholder="615875849"
+          />
+        </div>
+      )}
     </>
   );
 }
