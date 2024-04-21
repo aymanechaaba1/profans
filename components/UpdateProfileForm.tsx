@@ -73,7 +73,7 @@ function UpdateProfileForm() {
         name="email"
         autoComplete="off"
         defaultValue={user?.email}
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border-red-500': formState?.errors?.email,
         })}
         placeholder="name@contact.ma"
@@ -81,7 +81,7 @@ function UpdateProfileForm() {
       <Label htmlFor="gender">gender</Label>
       <select
         name="gender"
-        className={cn(`border py-1 px-3 rounded-lg`, {
+        className={cn(`border py-1 px-3 rounded-lg dark:bg-gray-900`, {
           'border border-red-500': formState?.errors?.gender,
         })}
         defaultValue={user?.gender}
@@ -98,7 +98,7 @@ function UpdateProfileForm() {
         name="firstname"
         autoComplete="off"
         defaultValue={user?.firstname}
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border border-red-500': formState?.errors?.firstname,
         })}
       />
@@ -108,7 +108,7 @@ function UpdateProfileForm() {
         name="lastname"
         autoComplete="off"
         defaultValue={user?.lastname}
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border border-red-500': false,
         })}
       />
@@ -118,7 +118,7 @@ function UpdateProfileForm() {
         name="cin"
         autoComplete="off"
         defaultValue={user?.cin}
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border border-red-500': false,
         })}
       />
@@ -127,14 +127,14 @@ function UpdateProfileForm() {
         type="date"
         name="birthdate"
         defaultValue={birthdateDefaultVal}
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border border-red-500': false,
         })}
       />
       <Label htmlFor="city">city</Label>
       <select
         name="city"
-        className={cn('border rounded-lg py-1 px-3', {
+        className={cn('border rounded-lg py-1 px-3 dark:bg-gray-900', {
           'border border-red-500': false,
         })}
         defaultValue={user?.city}

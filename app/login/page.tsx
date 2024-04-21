@@ -8,9 +8,9 @@ export const metadata: Metadata = {
 
 async function LoginPage() {
   return (
-    <>
+    <div className="container">
       <LoginForm />
-    </>
+    </div>
   );
 }
 

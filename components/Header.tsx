@@ -18,6 +18,7 @@ import Image from 'next/image';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import SwitchMode from './SwitchMode';
+import { Button } from './ui/button';
 
 async function Header() {
   const user = await getUser();
@@ -91,7 +92,7 @@ async function Header() {
             </Link>
             <Link
               href={'/register'}
-              className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-primary-foreground shadow h-9 px-4 py-2 rounded-[6px]"
+              className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-white text-primary-foreground shadow h-9 px-4 py-2 rounded-[6px]"
             >
               signup
             </Link>
