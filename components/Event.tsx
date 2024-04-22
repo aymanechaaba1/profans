@@ -14,6 +14,7 @@ async function Event({
   event: Awaited<ReturnType<typeof getUpcomingEvents>>[0];
 }) {
   const minPrice = await getMinPrice(event.id);
+  let expiredEvent = Date.now() > event.time.getTime();
 
   return (
     <Card className="rounded-lg">
@@ -57,17 +58,19 @@ async function Event({
           </p>
         </div>
         <BuyTicketDialog event={event} />
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs mt-2 text-center">
-              <span className="mr-1">starts at</span>
-              <span className="font-semibold">
-                {formatPrice(Number(minPrice || 0))}
-              </span>
-            </p>
+        {!expiredEvent && (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs mt-2 text-center">
+                <span className="mr-1">starts at</span>
+                <span className="font-semibold">
+                  {formatPrice(Number(minPrice || 0))}
+                </span>
+              </p>
+            </div>
+            <EventTimer event={event} />
           </div>
-          <EventTimer event={event} />
-        </div>
+        )}
       </CardContent>
     </Card>
   );
