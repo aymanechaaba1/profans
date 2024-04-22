@@ -10,6 +10,7 @@ import AuthProvider from '@/providers/AuthProvider';
 import { getSession } from '@/actions/getSession';
 import { getUser } from '@/lib/utils';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,7 +43,7 @@ export default async function RootLayout({
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-1 my-5">{children}</main>
-              <footer className="container">footer</footer>
+              <Footer />
               <Toaster />
             </div>
           </ThemeProvider>
