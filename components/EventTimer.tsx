@@ -44,9 +44,7 @@ function EventTimer({
           'text-red-500 font-semibold': totalSeconds / 3600 <= 24,
         })}
       >
-        {!timerExpired
-          ? `${days}d:${hours}h:${minutes}m:${seconds}s`
-          : 'expired'}
+        {!timerExpired && `${days}d:${hours}h:${minutes}m:${seconds}s`}
       </p>
     )
   );
