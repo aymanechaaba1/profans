@@ -7,7 +7,6 @@ import {
   MIN_LENGTH_FIRSTNAME,
   MIN_LENGTH_LASTNAME,
 } from '@/utils/config';
-import { upperFirst } from '@/utils/helpers';
 import { z } from 'zod';
 
 const contactFormSchema = z.object({

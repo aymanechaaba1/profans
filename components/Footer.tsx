@@ -150,7 +150,7 @@ function Footer() {
       </div>
       <Separator />
       <p className="italic text-center tracking-tight text-muted-foreground text-xs">
-        Profans LLC &#169; {today.getFullYear()}
+        Profans Inc. &#169; {today.getFullYear()}
       </p>
     </div>
   );
