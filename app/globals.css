@@ -131,4 +131,8 @@
   .card-content {
     @apply absolute w-[calc(100%-2px)] h-[calc(100%-2px)] top-[1px] left-[1px] bg-gradient-to-br bg-white from-gray-900 to-gray-950 p-5 rounded-2xl;
   }
+
+  .profans-link {
+    @apply transition-colors hover:text-foreground/80 text-foreground/60 tracking-tight scroll-m-20;
+  }
 }

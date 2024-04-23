@@ -64,3 +64,6 @@ export const getUrl = (path: string = '/') => {
   url += path;
   return url;
 };
+
+export const upperFirst = (word: string) =>
+  word[0].toUpperCase().concat(word.slice(1));
