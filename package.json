@@ -63,6 +63,7 @@
     "react-pdf-tailwind": "^2.3.0",
     "react-timeago": "^7.2.0",
     "react-timer-hook": "^3.0.7",
+    "resend": "^3.2.0",
     "sharp": "^0.33.3",
     "sonner": "^1.4.41",
     "speakeasy": "^2.0.0",

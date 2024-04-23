@@ -26,6 +26,7 @@ import { IoIosMail } from 'react-icons/io';
 import { SiShadcnui, SiFifa } from 'react-icons/si';
 import { IoLogoVercel } from 'react-icons/io5';
 import { CgAdidas } from 'react-icons/cg';
+import ContactUsForm from './ContactUsForm';
 
 type Social = {
   icon: JSX.Element;
@@ -122,9 +123,7 @@ function Footer() {
             Support
           </h3>
           <div className="flex flex-col mt-[5px] space-y-2">
-            <Link href={''} className="profans-link text-right">
-              Contact Us
-            </Link>
+            <ContactUsForm />
             <div className="flex items-center flex-row-reverse gap-x-2 justify-start ">
               <FaHeadset className="text-foreground/60" />
               <p className="text-foreground/60">+1 567 478 5890</p>

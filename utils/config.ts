@@ -4,3 +4,6 @@ export const key = new TextEncoder().encode(secret);
 export const expiresIn = 60 * 60; // in s
 export const TICKETS_LIMIT: number = 10;
 export const MODE: 'dev' | 'prev' | 'prod' = 'dev';
+export const MAX_LENGTH = 10;
+export const MIN_LENGTH_FIRSTNAME = 3;
+export const MIN_LENGTH_LASTNAME = 3;
