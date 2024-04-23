@@ -11,7 +11,7 @@ import { Button } from './ui/button';
 import { useFormState, useFormStatus } from 'react-dom';
 import { Loader2 } from 'lucide-react';
 import {
-  MAX_LENGTH,
+  MESSAGE_MAX_LENGTH,
   MIN_LENGTH_FIRSTNAME,
   MIN_LENGTH_LASTNAME,
 } from '@/utils/config';
@@ -92,7 +92,7 @@ function ContactUsForm() {
       setValidPhone(phoneResult.success);
     }
 
-    if (message.length <= MAX_LENGTH) setValidMessage(true);
+    if (message.length <= MESSAGE_MAX_LENGTH) setValidMessage(true);
     else setValidMessage(false);
 
     // @ts-ignore
@@ -203,12 +203,12 @@ function ContactUsForm() {
           >
             <span
               className={cn('', {
-                'text-red-500': message.length > MAX_LENGTH,
+                'text-red-500': message.length > MESSAGE_MAX_LENGTH,
               })}
             >
               {message.length}
             </span>
-            -{MAX_LENGTH}
+            -{MESSAGE_MAX_LENGTH}
           </small>
           <SubmitBtn />
         </form>

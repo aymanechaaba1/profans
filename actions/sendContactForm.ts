@@ -3,7 +3,7 @@
 import EmailTemplate from '@/components/emails/EmailTemplate';
 import resend from '@/lib/resend';
 import {
-  MAX_LENGTH,
+  MESSAGE_MAX_LENGTH,
   MIN_LENGTH_FIRSTNAME,
   MIN_LENGTH_LASTNAME,
 } from '@/utils/config';
@@ -15,7 +15,7 @@ const contactFormSchema = z.object({
   lastname: z.string().min(MIN_LENGTH_LASTNAME),
   email: z.string().email(),
   phone: z.string().regex(new RegExp(/^\+(?:[0-9] ?){6,14}[0-9]$/)),
-  message: z.string().max(MAX_LENGTH),
+  message: z.string().max(MESSAGE_MAX_LENGTH),
 });
 
 export async function sendContactForm(prevState: any, formData: FormData) {
