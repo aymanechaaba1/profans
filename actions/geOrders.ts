@@ -33,5 +33,5 @@ export async function getOrders({ userId }: { userId: string }) {
     .where(eq(users.id, userId))
     .orderBy(desc(orderItems.createdAt));
 
-  return userOrders;
+  return userOrders.slice(0);
 }
