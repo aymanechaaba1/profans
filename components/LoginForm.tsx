@@ -83,7 +83,7 @@ function LoginForm() {
       if (otpCode && otpCode.length === 6) {
         if (otpCode === sentOtp) {
           // generate jwt
-          let expiresIn = 24 * 60 * 60; // in seconds
+          let expiresIn = 24 * 60 * 60; // one day
           setJWT(userId, expiresIn)
             .then(() => {
               router.replace('/');

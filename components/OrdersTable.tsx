@@ -58,36 +58,39 @@ function OrdersTable({
             <TableCell>{order.quantity}</TableCell>
             <TableCell>{formatPrice(Number(order.unitPrice || 0))}</TableCell>
             <TableCell>{formatPrice(Number(order.total || 0))}</TableCell>
-            <TableCell>
-              <FaDownload
-                className="text-center mx-auto text-slate-800 dark:text-slate-300 cursor-pointer"
-                onClick={async () => {
-                  if (!session || !session.user) return;
-                  let path = `/tickets/${session.user.id}/${order.orderId}_${order.ticketId}_${i}.pdf`;
-                  let url = await getDownloadURL(ref(storage, path));
+            {order.orderId && (
+              <TableCell>
+                <FaDownload
+                  className="text-center mx-auto text-slate-800 dark:text-slate-300 cursor-pointer"
+                  onClick={async () => {
+                    if (!session || !session.user) return;
+                    let path = `/tickets/${session.user.id}/${order.orderId}_${order.ticketId}.pdf`;
+                    let url = await getDownloadURL(ref(storage, path));
+                    if (!url) return;
 
-                  const xhr = new XMLHttpRequest();
-                  xhr.responseType = 'blob';
-                  xhr.onload = (event) => {
-                    const blob = xhr.response;
-                    let blobUrl = window.URL.createObjectURL(blob);
+                    const xhr = new XMLHttpRequest();
+                    xhr.responseType = 'blob';
+                    xhr.onload = (event) => {
+                      const blob = xhr.response;
+                      let blobUrl = window.URL.createObjectURL(blob);
 
-                    let link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = `ticket-${order.ticketId}`;
+                      let link = document.createElement('a');
+                      link.href = blobUrl;
+                      link.download = `ticket-${order.ticketId}`;
 
-                    document.body.appendChild(link);
+                      document.body.appendChild(link);
 
-                    link.click();
+                      link.click();
 
-                    window.URL.revokeObjectURL(blobUrl);
-                    document.body.removeChild(link);
-                  };
-                  xhr.open('GET', url);
-                  xhr.send();
-                }}
-              />
-            </TableCell>
+                      window.URL.revokeObjectURL(blobUrl);
+                      document.body.removeChild(link);
+                    };
+                    xhr.open('GET', url);
+                    xhr.send();
+                  }}
+                />
+              </TableCell>
+            )}
           </TableRow>
         ))}
       </TableBody>

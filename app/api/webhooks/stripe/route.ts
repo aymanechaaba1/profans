@@ -3,7 +3,7 @@ import db from '@/drizzle';
 import { cart, cartItems, orderItems, orders, tickets } from '@/drizzle/schema';
 import stripe from '@/lib/stripe';
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { Ticket } from '@/components/ticket';
@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
 
         // clear cart
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
-        revalidatePath('/', 'layout');
 
         // send tickets pdf
         await sendTickets(
@@ -134,6 +133,8 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         console.log(err);
       }
+
+      revalidatePath('/', 'layout');
 
     default:
       console.log(`Unhandled event type ${event.type}`);
@@ -152,29 +153,27 @@ async function sendTickets(
   },
   items: (typeof orderItems.$inferSelect)[]
 ) {
-  let urls: string[] = [];
+  let url: string[] = [];
 
   for (const item of items) {
-    for (let i = 0; i < item.quantity; i++) {
-      let ticket = await Ticket(item);
-      if (!ticket) return;
+    let ticket = await Ticket(item);
+    if (!ticket) return;
 
-      let pdfBuffer = await getPdfBuffer(ticket);
+    let pdfBuffer = await getPdfBuffer(ticket);
 
-      let path = `/tickets/${user.id}/${item.orderId}_${item.ticketId}_${i}.pdf`;
-      await uploadPdfToFirebase({
-        path,
-        pdfBuffer,
-      });
+    let path = `/tickets/${user.id}/${item.orderId}_${item.ticketId}.pdf`;
+    await uploadPdfToFirebase({
+      path,
+      pdfBuffer,
+    });
 
-      let url = await getDownloadURL(ref(storage, path));
-      urls.push(url);
-    }
+    let url = await getDownloadURL(ref(storage, path));
+    url = url;
   }
 
   await sendToEmail({
     to: user.email,
     subject: `${user.firstname}, Download Your Tickets`,
-    text: `Links: \n ${urls.join('\n\n')}`,
+    text: `Links: \n ${url}`,
   });
 }
