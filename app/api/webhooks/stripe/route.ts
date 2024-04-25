@@ -145,10 +145,7 @@ export async function POST(req: NextRequest) {
 
         revalidatePath('/', 'layout');
       } catch (err: any) {
-        return new NextResponse(null, {
-          status: 400,
-          statusText: err.message,
-        });
+        console.log(err);
       }
 
     default:
