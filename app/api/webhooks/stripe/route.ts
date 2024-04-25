@@ -98,12 +98,14 @@ export async function POST(req: NextRequest) {
 
             let path = `/tickets/${user.id}/${item[0].orderId}_${item[0].ticketId}.pdf`;
             let pdfBuffer = await getPdfBuffer(ticket);
-            await uploadPdfToFirebase({
+            let snapshot = await uploadPdfToFirebase({
               path,
               pdfBuffer,
             });
+            console.log(snapshot.ref);
 
-            let url = await getDownloadURL(ref(storage, path));
+            let url = await getDownloadURL(snapshot.ref);
+            console.log(url);
             urls.push(url);
           })
         );
