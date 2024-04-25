@@ -78,59 +78,46 @@ export async function POST(req: NextRequest) {
           stripe.checkout.sessions.listLineItems(checkoutSessionCompleted.id),
           getTickets(),
         ]);
-
         if (!newOrder) return;
 
         let items: (typeof orderItems.$inferSelect)[] = [];
-        await Promise.all(
-          lineItems.data.map(async (lineItem) => {
-            let item = await db
-              .insert(orderItems)
-              .values({
-                orderId: newOrder[0].id,
-                ticketId: _tickets.find(
-                  (ticket) => ticket.stripePriceId === lineItem?.price?.id
-                )?.id!,
-                quantity: lineItem.quantity || 0,
-                total: (lineItem.amount_total / 100).toString(),
-              })
-              .returning();
+        for (const [i, lineItem] of lineItems.data.entries()) {
+          let item = await db
+            .insert(orderItems)
+            .values({
+              orderId: newOrder[0].id,
+              ticketId: _tickets.find(
+                (ticket) => ticket.stripePriceId === lineItem?.price?.id
+              )?.id!,
+              quantity: lineItem.quantity || 0,
+              total: (lineItem.amount_total / 100).toString(),
+            })
+            .returning();
 
-            let ticket = await Ticket(item[0]);
-            if (!ticket) return;
-
-            let path = `/tickets/${user.id}/${item[0].orderId}_${item[0].ticketId}.pdf`;
-            let pdfBuffer = await getPdfBuffer(ticket);
-            let snapshot = await uploadPdfToFirebase({
-              path,
-              pdfBuffer,
-            });
-            snapshotRefs.push(snapshot.ref);
-
-            let url = await getDownloadURL(snapshot.ref);
-            urls.push(url);
-          })
-        );
-
-        console.log(snapshotRefs);
-        console.log(urls);
-
-        await sendToEmail({
-          to: user.email,
-          subject: `${user.firstname}, Download Your Tickets`,
-          text: `Links: \n ${urls.join('\n')}`,
-        });
-
-        // loop over each ticket and update its stock
-        // 1. ticketStock = ticketStock - cartItemQuantity
-        user.cart.items.forEach(async (item) => {
-          let ticket = await db.query.tickets.findFirst({
-            where: (tickets, { eq }) => eq(tickets.id, item.ticketId),
-          });
-
+          let ticket = await Ticket(item[0]);
           if (!ticket) return;
 
-          if (!ticket.stock)
+          let path = `/tickets/${user.id}/${item[0].orderId}_${item[0].ticketId}.pdf`;
+
+          let pdfBuffer = await getPdfBuffer(ticket);
+          let snapshot = await uploadPdfToFirebase({
+            path,
+            pdfBuffer,
+          });
+          snapshotRefs.push(snapshot.ref);
+
+          let url = await getDownloadURL(snapshot.ref);
+          urls.push(url);
+
+          // loop over each ticket and update its stock
+          // 1. ticketStock = ticketStock - cartItemQuantity
+          let cartItem = user.cart.items[i];
+          let itemTicket = await db.query.tickets.findFirst({
+            where: (tickets, { eq }) => eq(tickets.id, cartItem.ticketId),
+          });
+
+          if (!itemTicket) return;
+          if (!itemTicket.stock)
             return new NextResponse(null, {
               status: 400,
               statusText: 'TICKETS SOLD OUT',
@@ -139,17 +126,26 @@ export async function POST(req: NextRequest) {
           await db
             .update(tickets)
             .set({
-              stock: ticket.stock - item.quantity,
+              stock: itemTicket.stock - cartItem.quantity,
             })
-            .where(eq(tickets.id, item.ticketId));
-        });
+            .where(eq(tickets.id, cartItem.ticketId));
+        }
 
-        // clear cart
-        await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
+        await Promise.all([
+          sendToEmail({
+            to: user.email,
+            subject: `${user.firstname}, Download Your Tickets`,
+            text: `Links: \n ${urls.join('\n')}`,
+          }),
+          db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id)),
+        ]);
 
         revalidatePath('/', 'layout');
-      } catch (err: any) {
-        console.log(err);
+      } catch (err) {
+        return new NextResponse(null, {
+          status: 400,
+          statusText: `${event.type}_SOMETHING WENT WRONG!`,
+        });
       }
 
     default:
