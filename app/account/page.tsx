@@ -6,20 +6,16 @@ import { unstable_cache } from 'next/cache';
 async function AccountPage() {
   const user = await getUser();
 
-  let getCachedOrders = unstable_cache(getOrders, ['orders'], {
-    tags: ['orders'],
-    revalidate: 60,
-  });
-  let cachedOrders: any = [];
+  let orders: any = [];
   if (user)
-    cachedOrders = await getCachedOrders({
+    orders = await getOrders({
       userId: user.id,
     });
 
   if (user)
     return (
       <div className="container">
-        <AccountTabs userClaims={user.claims} userOrders={cachedOrders} />
+        <AccountTabs userClaims={user.claims} userOrders={orders} />
       </div>
     );
 }

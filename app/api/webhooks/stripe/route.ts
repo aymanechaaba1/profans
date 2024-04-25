@@ -78,6 +78,7 @@ export async function POST(req: NextRequest) {
         if (!newOrder) return;
 
         let items: (typeof orderItems.$inferSelect)[] = [];
+        let urls: string[] = [];
         await Promise.all(
           lineItems.data.map(async (lineItem) => {
             let item = await db
@@ -91,9 +92,27 @@ export async function POST(req: NextRequest) {
                 total: (lineItem.amount_total / 100).toString(),
               })
               .returning();
-            items.push(item[0]);
+
+            let ticket = await Ticket(item[0]);
+            if (!ticket) return;
+
+            let path = `/tickets/${user.id}/${item[0].orderId}_${item[0].ticketId}.pdf`;
+            let pdfBuffer = await getPdfBuffer(ticket);
+            await uploadPdfToFirebase({
+              path,
+              pdfBuffer,
+            });
+
+            let url = await getDownloadURL(ref(storage, path));
+            urls.push(url);
           })
         );
+
+        await sendToEmail({
+          to: user.email,
+          subject: `${user.firstname}, Download Your Tickets`,
+          text: `Links: \n ${urls.join('\n')}`,
+        });
 
         // loop over each ticket and update its stock
         // 1. ticketStock = ticketStock - cartItemQuantity
@@ -121,20 +140,11 @@ export async function POST(req: NextRequest) {
         // clear cart
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
 
-        // send tickets pdf
-        await sendTickets(
-          {
-            id: user.id,
-            email: user.email,
-            firstname: user.firstname,
-          },
-          items
-        );
+        revalidatePath('/', 'layout');
+        revalidateTag('user');
       } catch (err) {
         console.log(err);
       }
-
-      revalidatePath('/', 'layout');
 
     default:
       console.log(`Unhandled event type ${event.type}`);
@@ -142,38 +152,5 @@ export async function POST(req: NextRequest) {
 
   return new NextResponse(event.type, {
     status: 200,
-  });
-}
-
-async function sendTickets(
-  user: {
-    id: string;
-    email: string;
-    firstname: string;
-  },
-  items: (typeof orderItems.$inferSelect)[]
-) {
-  let url: string[] = [];
-
-  for (const item of items) {
-    let ticket = await Ticket(item);
-    if (!ticket) return;
-
-    let pdfBuffer = await getPdfBuffer(ticket);
-
-    let path = `/tickets/${user.id}/${item.orderId}_${item.ticketId}.pdf`;
-    await uploadPdfToFirebase({
-      path,
-      pdfBuffer,
-    });
-
-    let url = await getDownloadURL(ref(storage, path));
-    url = url;
-  }
-
-  await sendToEmail({
-    to: user.email,
-    subject: `${user.firstname}, Download Your Tickets`,
-    text: `Links: \n ${url}`,
   });
 }
