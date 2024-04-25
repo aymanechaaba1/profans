@@ -141,7 +141,6 @@ export async function POST(req: NextRequest) {
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
 
         revalidatePath('/', 'layout');
-        revalidateTag('user');
       } catch (err) {
         console.log(err);
       }
