@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   let urls: string[] = [];
-  let snapshotRef: StorageReference | undefined;
+  let snapshotRefs: StorageReference[] = [];
   switch (event.type) {
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
@@ -103,13 +103,15 @@ export async function POST(req: NextRequest) {
               path,
               pdfBuffer,
             });
-            snapshotRef = snapshot.ref;
+            snapshotRefs.push(snapshot.ref);
 
             let url = await getDownloadURL(snapshot.ref);
-            console.log(url);
             urls.push(url);
           })
         );
+
+        console.log(snapshotRefs);
+        console.log(urls);
 
         await sendToEmail({
           to: user.email,
@@ -152,7 +154,7 @@ export async function POST(req: NextRequest) {
       console.log(`Unhandled event type ${event.type}`);
   }
 
-  return new NextResponse(JSON.stringify([snapshotRef, urls]), {
+  return new NextResponse(JSON.stringify([snapshotRefs, urls]), {
     status: 200,
     statusText: 'SUCCESS CHECKOUT',
   });
