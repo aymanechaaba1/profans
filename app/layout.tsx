@@ -41,7 +41,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <div className="flex flex-col min-h-screen">
-              <Header />
+              <Header user={user} />
               <main className="flex-1 my-5">{children}</main>
               <Footer />
               <Toaster />
