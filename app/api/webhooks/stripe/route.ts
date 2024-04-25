@@ -11,7 +11,7 @@ import { getPdfBuffer } from '@/actions/getPdfBuffer';
 import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
 import { getUser } from '@/lib/utils';
 import { sendToEmail } from '@/actions/sendToEmail';
-import { getDownloadURL, ref } from 'firebase/storage';
+import { StorageReference, getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '@/lib/firebase';
 import type Stripe from 'stripe';
 import { getTickets } from '@/actions/getTickets';
@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
     return new NextResponse(`Webhook Error`);
   }
 
+  let urls: string[] = [];
+  let snapshotRef: StorageReference | undefined;
   switch (event.type) {
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
@@ -78,7 +80,6 @@ export async function POST(req: NextRequest) {
         if (!newOrder) return;
 
         let items: (typeof orderItems.$inferSelect)[] = [];
-        let urls: string[] = [];
         await Promise.all(
           lineItems.data.map(async (lineItem) => {
             let item = await db
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
               path,
               pdfBuffer,
             });
-            console.log(snapshot.ref);
+            snapshotRef = snapshot.ref;
 
             let url = await getDownloadURL(snapshot.ref);
             console.log(url);
@@ -151,7 +152,7 @@ export async function POST(req: NextRequest) {
       console.log(`Unhandled event type ${event.type}`);
   }
 
-  return new NextResponse(event.type, {
+  return new NextResponse(JSON.stringify([snapshotRef, urls]), {
     status: 200,
   });
 }
