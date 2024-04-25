@@ -144,8 +144,11 @@ export async function POST(req: NextRequest) {
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
 
         revalidatePath('/', 'layout');
-      } catch (err) {
-        console.log(err);
+      } catch (err: any) {
+        return new NextResponse(null, {
+          status: 400,
+          statusText: err.message,
+        });
       }
 
     default:
@@ -154,5 +157,6 @@ export async function POST(req: NextRequest) {
 
   return new NextResponse(JSON.stringify([snapshotRef, urls]), {
     status: 200,
+    statusText: 'SUCCESS CHECKOUT',
   });
 }
