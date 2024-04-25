@@ -112,9 +112,6 @@ export async function POST(req: NextRequest) {
           })
         );
 
-        console.log(snapshotRefs);
-        console.log(urls);
-
         await sendToEmail({
           to: user.email,
           subject: `${user.firstname}, Download Your Tickets`,
@@ -148,8 +145,11 @@ export async function POST(req: NextRequest) {
         await db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id));
 
         revalidatePath('/', 'layout');
-      } catch (err: any) {
-        console.log(err);
+      } catch (err) {
+        return new NextResponse(null, {
+          status: 400,
+          statusText: `${event.type}_SOMETHING WENT WRONG!`,
+        });
       }
 
     default:
