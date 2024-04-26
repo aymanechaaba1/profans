@@ -138,6 +138,7 @@ export async function POST(req: NextRequest) {
 
         revalidatePath('/', 'layout');
       } catch (err) {
+        console.log(err);
         return new NextResponse(null, {
           status: 400,
           statusText: `${event.type}_SOMETHING WENT WRONG!`,
