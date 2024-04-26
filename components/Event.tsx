@@ -37,7 +37,7 @@ async function Event({
               <CardTitle className="">{event.name}</CardTitle>
               <CardDescription>{event.description}</CardDescription>
             </div>
-            <Link href={`/events/${event.id}`}>
+            <Link prefetch={false} href={`/events/${event.id}`}>
               <Send size={18} />
             </Link>
           </div>

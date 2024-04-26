@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import { Loader, Loader2 } from 'lucide-react';
 import { Idd, RestCountry } from '@/types/rest-countries';
 import { Label } from './ui/label';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Select,
   SelectContent,
@@ -54,7 +55,6 @@ function PhoneNumberInput({
     )
       .then((res) => res.json())
       .then((data: MapboxReverseGeocodingData) => {
-        console.log(data);
         setCountry(data.features[0].place_name.toLowerCase());
       });
   }
@@ -81,7 +81,7 @@ function PhoneNumberInput({
                   country.idd.root &&
                   country.idd.suffixes?.[0] && (
                     <SelectItem
-                      key={i}
+                      key={`${i}-${uuidv4()}`}
                       value={`${country.idd.root}${country.idd.suffixes?.[0]}`}
                     >
                       {`${country.idd.root}${country.idd.suffixes?.[0]}`}
