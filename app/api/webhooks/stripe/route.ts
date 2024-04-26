@@ -9,10 +9,8 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Ticket } from '@/components/ticket';
 import { getPdfBuffer } from '@/actions/getPdfBuffer';
 import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
-import { getUser } from '@/lib/utils';
 import { sendToEmail } from '@/actions/sendToEmail';
 import { StorageReference, getDownloadURL, ref } from 'firebase/storage';
-import { storage } from '@/lib/firebase';
 import type Stripe from 'stripe';
 import { getTickets } from '@/actions/getTickets';
 
@@ -104,8 +102,6 @@ export async function POST(req: NextRequest) {
             path,
             pdfBuffer,
           });
-          snapshotRefs.push(snapshot.ref);
-
           let url = await getDownloadURL(snapshot.ref);
           urls.push(url);
 
