@@ -8,7 +8,7 @@ export async function getPdfBuffer(html: string) {
   const executablePath = await chromium.executablePath();
 
   let browser: any;
-  if (process.env.VERCEL_ENV === 'production')
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production')
     browser = await puppeteerCore.launch({
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
