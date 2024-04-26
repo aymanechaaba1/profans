@@ -1,5 +1,4 @@
 'use server';
-
 import puppeteer, { Browser } from 'puppeteer';
 import puppeteerCore from 'puppeteer-core';
 import chromium from '@sparticuz/chromium';
@@ -19,14 +18,14 @@ export async function getPdfBuffer(html: string) {
 
   const page = await browser.newPage();
 
-  await page.setContent(html, { waitUntil: 'domcontentloaded' });
-
-  const pdfBuffer = await page.pdf({
-    width: '8.5in',
-    height: '5.5in',
-  });
-
-  await browser.close();
+  const [_, pdfBuffer] = await Promise.all([
+    page.setContent(html, { waitUntil: 'domcontentloaded' }),
+    page.pdf({
+      width: '8.5in',
+      height: '5.5in',
+    }),
+    browser.close(),
+  ]);
 
   return pdfBuffer;
 }
