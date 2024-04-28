@@ -25,7 +25,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ContactUsFormState } from '@/types/forms/contact-us-form';
 
 function SubmitBtn() {
   const { pending } = useFormStatus();
@@ -40,8 +39,6 @@ function SubmitBtn() {
     </Button>
   );
 }
-
-const initState: ContactUsFormState = null;
 
 function ContactUsForm() {
   const [firstname, setFirstname] = useState<string>('');
@@ -60,7 +57,7 @@ function ContactUsForm() {
   const [validMessage, setValidMessage] = useState<boolean | undefined>(
     undefined
   );
-  const [state, formAction] = useFormState(sendContactForm, initState);
+  const [state, formAction] = useFormState(sendContactForm, null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const formRef = useRef<ElementRef<'form'>>(null);
 

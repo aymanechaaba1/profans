@@ -1,11 +1,10 @@
 'use server';
 
 import OTPEmail from '@/components/emails/OTPEmail';
-import { CreateEmailResponse } from 'resend';
 import resend from '@/lib/resend';
 
 export async function sendOtp(otp: string) {
-  let emailResult: CreateEmailResponse;
+  let emailResult: any;
   try {
     emailResult = await resend.emails.send({
       from: 'Profans <onboarding@resend.dev>',
