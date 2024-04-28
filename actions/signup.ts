@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { signJWT } from './signJWT';
 import { NextResponse } from 'next/server';
 import { UserSchema } from '@/schemas/userSchema';
+import { sendWelcomeEmail } from './sendWelcomeEmail';
 
 export async function signup(
   currentState: any,
@@ -81,6 +82,9 @@ export async function signup(
       httpOnly: true,
       maxAge: expiresIn * 1000, // one day in ms
     });
+
+    const emailData = await sendWelcomeEmail(newUser[0]);
+    console.log(emailData);
 
     return {
       ok: true,

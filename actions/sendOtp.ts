@@ -1,36 +1,21 @@
 'use server';
 
-import { generateOTP } from './generateOtp';
-import nodemailer from 'nodemailer';
+import OTPEmail from '@/components/emails/OTPEmail';
+import { CreateEmailResponse } from 'resend';
+import resend from '@/lib/resend';
 
-type ReturnResponse = {
-  otp: string;
-  messageId: string;
-};
-export async function sendOtp(
-  email: string
-): Promise<ReturnResponse | undefined> {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: 'smtp.gmail.com',
-    auth: {
-      user: 'aymanechaaba1@gmail.com',
-      pass: process.env.NODEMAILER_PASS || 'ozvo hrxc eahj rgeg', // secret key
-    },
-  });
-
-  const otp = await generateOTP();
-
+export async function sendOtp(otp: string) {
+  let emailResult: CreateEmailResponse;
   try {
-    const res = await transporter.sendMail({
-      from: '"Tadakir.net Clone" <aymanechaaba1@gmail.com>',
-      to: email,
+    emailResult = await resend.emails.send({
+      from: 'Profans <onboarding@resend.dev>',
+      to: ['aymanechaaba1@gmail.com'],
       subject: 'OTP for Authentication',
-      text: `Your OTP for authentication is: ${otp}`,
+      react: OTPEmail({ code: otp }),
     });
-    return { otp, messageId: res.messageId };
   } catch (err) {
-    console.log(err);
     return undefined;
   }
+
+  return emailResult.data;
 }

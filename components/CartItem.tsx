@@ -1,13 +1,7 @@
 import { cartItems, eventOptions, events, tickets } from '@/drizzle/schema';
 import { Card, CardDescription } from './ui/card';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { getEvent } from '@/actions/getEvent';
-import { toast } from 'sonner';
-import { getEventOption } from '@/actions/getEventOption';
-import { Input } from './ui/input';
 import QuantityUnitPriceSubTotal from './QuantityUnitPriceSubTotal';
-import { getTicket } from '@/actions/getTicket';
 import db from '@/drizzle';
 import { Trash2 } from 'lucide-react';
 import { deleteCartItem } from '@/actions/deleteCartItem';
@@ -18,20 +12,18 @@ async function CartItem({
 }: {
   cartItem: typeof cartItems.$inferSelect;
 }) {
-  const [event] = await Promise.all([
-    await db
-      .select({
-        eventName: events.name,
-        thumbnail: events.thumbnail,
-        eventDescription: events.description,
-        option: eventOptions.name,
-        price: eventOptions.price,
-      })
-      .from(events)
-      .fullJoin(tickets, eq(events.id, tickets.eventId))
-      .fullJoin(eventOptions, eq(tickets.optionId, eventOptions.id))
-      .where(eq(tickets.id, cartItem.ticketId)),
-  ]);
+  const event = await db
+    .select({
+      eventName: events.name,
+      thumbnail: events.thumbnail,
+      eventDescription: events.description,
+      option: eventOptions.name,
+      price: eventOptions.price,
+    })
+    .from(events)
+    .fullJoin(tickets, eq(events.id, tickets.eventId))
+    .fullJoin(eventOptions, eq(tickets.optionId, eventOptions.id))
+    .where(eq(tickets.id, cartItem.ticketId));
 
   return (
     <Card className="p-4">

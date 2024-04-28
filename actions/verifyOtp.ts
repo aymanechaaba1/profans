@@ -1,17 +1,10 @@
 'use server';
 
-import client, { verifySid } from '@/lib/twilio';
+import { DEFAULT_OTP_TIME } from '@/utils/config';
+// import twofactor from 'node-2fa';
+const twofactor = require('node-2fa');
 
-export async function verifyOtp(phone: string, code: string) {
-  try {
-    // verify code
-    const verification_check = await client.verify.v2
-      .services(verifySid)
-      .verificationChecks.create({ to: phone, code });
-
-    return verification_check;
-  } catch (err) {
-    console.log(err);
-    return err;
-  }
+export async function verifyOtp(secret: string, token: string) {
+  const result = twofactor.verifyToken(secret, token, DEFAULT_OTP_TIME);
+  return result;
 }

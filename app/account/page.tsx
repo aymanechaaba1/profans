@@ -1,4 +1,4 @@
-import { getOrders } from '@/actions/geOrders';
+import { getOrders } from '@/actions/getOrders';
 import AccountTabs from '@/components/AccountTabs';
 import { getUser } from '@/lib/utils';
 import { unstable_cache } from 'next/cache';

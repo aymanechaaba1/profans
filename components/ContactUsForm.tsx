@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { ContactUsFormState } from '@/types/forms/contact-us-form';
 
 function SubmitBtn() {
   const { pending } = useFormStatus();
@@ -39,6 +40,8 @@ function SubmitBtn() {
     </Button>
   );
 }
+
+const initState: ContactUsFormState = null;
 
 function ContactUsForm() {
   const [firstname, setFirstname] = useState<string>('');
@@ -57,7 +60,7 @@ function ContactUsForm() {
   const [validMessage, setValidMessage] = useState<boolean | undefined>(
     undefined
   );
-  const [state, formAction] = useFormState(sendContactForm, null);
+  const [state, formAction] = useFormState(sendContactForm, initState);
   const [showModal, setShowModal] = useState<boolean>(false);
   const formRef = useRef<ElementRef<'form'>>(null);
 
@@ -96,16 +99,16 @@ function ContactUsForm() {
     else setValidMessage(false);
 
     // @ts-ignore
-    if (state?.id) {
-      setFirstname('');
-      setLastname('');
-      setPhone('');
-      setEmail('');
-      setMessage('');
-      toast('message sent');
+    if (state?.data?.id) {
+      // setFirstname('');
+      // setLastname('');
+      // setPhone('');
+      // setEmail('');
+      // setMessage('');
+      toast('✔️ message sent');
       // @ts-ignore
-      state.id = '';
-      setShowModal(false);
+      state.data.id = '';
+      // setShowModal(false);
     }
   }, [firstname, lastname, email, phone, message, state]);
 

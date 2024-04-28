@@ -1,10 +1,4 @@
 import React from 'react';
-import {
-  IconClipboardCopy,
-  IconFileBroken,
-  IconSignature,
-  IconTableColumn,
-} from '@tabler/icons-react';
 import { BentoGrid, BentoGridItem } from './ui/bento-grid';
 import { Headset, HeartHandshake, Zap } from 'lucide-react';
 

@@ -9,10 +9,12 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { Ticket } from '@/components/ticket';
 import { getPdfBuffer } from '@/actions/getPdfBuffer';
 import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
-import { sendToEmail } from '@/actions/sendToEmail';
 import { StorageReference, getDownloadURL, ref } from 'firebase/storage';
 import type Stripe from 'stripe';
 import { getTickets } from '@/actions/getTickets';
+import resend from '@/lib/resend';
+import DownloadTicketsEmail from '@/components/emails/DownloadTicketsEmail';
+import { upperFirst } from '@/utils/helpers';
 
 export const dynamic = 'force-dynamic';
 
@@ -111,13 +113,7 @@ export async function POST(req: NextRequest) {
           let itemTicket = await db.query.tickets.findFirst({
             where: (tickets, { eq }) => eq(tickets.id, cartItem.ticketId),
           });
-
-          if (!itemTicket) return;
-          if (!itemTicket.stock)
-            return new NextResponse(null, {
-              status: 400,
-              statusText: 'TICKETS SOLD OUT',
-            });
+          if (!itemTicket || !itemTicket.stock) return;
 
           await db
             .update(tickets)
@@ -127,22 +123,27 @@ export async function POST(req: NextRequest) {
             .where(eq(tickets.id, cartItem.ticketId));
         }
 
-        await Promise.all([
-          sendToEmail({
-            to: user.email,
-            subject: `${user.firstname}, Download Your Tickets`,
-            text: `Links: \n ${urls.join('\n')}`,
+        const [emailData, _cartItems] = await Promise.all([
+          resend.emails.send({
+            from: 'Profans <onboarding@resend.dev>',
+            to: 'aymanechaaba1@gmail.com',
+            subject: `${upperFirst(user.firstname)}, Download your Tickets`,
+            react: DownloadTicketsEmail({
+              firstname: user.firstname,
+              order: newOrder[0],
+              message: '',
+              urls,
+            }),
           }),
-          db.delete(cartItems).where(eq(cartItems.cartId, user.cart.id)),
+          db
+            .delete(cartItems)
+            .where(eq(cartItems.cartId, user.cart.id))
+            .returning(),
         ]);
 
         revalidatePath('/', 'layout');
       } catch (err) {
         console.log(err);
-        return new NextResponse(null, {
-          status: 400,
-          statusText: `${event.type}_SOMETHING WENT WRONG!`,
-        });
       }
 
     default:

@@ -21,6 +21,11 @@ import { useFormStatus } from 'react-dom';
 import { Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { verifyOtp } from '@/actions/verifyOtp';
+import { generateOTP } from '@/actions/generateOtp';
+import Image from 'next/image';
+import { generateQrCode } from '@/actions/generateQrCode';
+import { DEFAULT_OTP_TIME } from '@/utils/config';
 
 export type LoginFormState = {
   ok: boolean;
@@ -56,7 +61,9 @@ function LoginForm() {
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpCode, setOtpCode] = useState('');
-  const [sentOtp, setSentOtp] = useState('');
+  const [sentOtp, setSentOtp] =
+    useState<Awaited<ReturnType<typeof generateOTP>>>(undefined);
+  const [qr, setQr] = useState<string>('');
   const [userId, setUserId] = useState('');
   const router = useRouter();
 
@@ -71,17 +78,25 @@ function LoginForm() {
     setUserId(user.id);
 
     // send otp code
-    const sendingResult = await sendOtp(email);
-    if (sendingResult?.messageId) {
-      setSentOtp(sendingResult.otp);
+    const otp = await generateOTP();
+    if (!otp) return;
+    setSentOtp(otp);
+
+    const url = await generateQrCode<string>(otp.secret.uri);
+    setQr(url);
+
+    const emailData = await sendOtp(otp.token.token);
+    if (emailData?.id) {
       setShowOtpInput(true);
     }
   }
 
   useEffect(() => {
     if (activeTab === 'email') {
-      if (otpCode && otpCode.length === 6) {
-        if (otpCode === sentOtp) {
+      if (otpCode && otpCode.length === 6 && sentOtp) {
+        verifyOtp(sentOtp.secret.secret, otpCode).then((verificationResult) => {
+          if (!verificationResult) return toast('wrong otp!');
+
           // generate jwt
           let expiresIn = 24 * 60 * 60; // one day
           setJWT(userId, expiresIn)
@@ -92,7 +107,7 @@ function LoginForm() {
             .catch(() => {
               toast('something went wrong!');
             });
-        }
+        });
       }
     }
   }, [activeTab, otpCode, sentOtp, userId]);
@@ -138,11 +153,11 @@ function LoginForm() {
               placeholder="name@contact.ma"
             />
             {showOtpInput && (
-              <div className="mt-4 col-span-2 mx-auto">
+              <div className="mt-4 col-span-2 flex flex-col justify-center items-center">
                 <InputOTP
                   maxLength={6}
                   pattern={REGEXP_ONLY_DIGITS}
-                  className="w-full"
+                  className="w-full mx-auto"
                   value={otpCode}
                   onChange={(val) => setOtpCode(val)}
                 >
@@ -159,7 +174,8 @@ function LoginForm() {
                   </InputOTPGroup>
                 </InputOTP>
                 <p className="text-xs text-gray-800 dark:text-slate-200 mt-3 text-center">
-                  Enter your one-time password.
+                  Enter your one-time password. (valid for only{' '}
+                  {DEFAULT_OTP_TIME} minutes)
                 </p>
               </div>
             )}

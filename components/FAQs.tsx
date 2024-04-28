@@ -42,6 +42,12 @@ const faqs: FAQ[] = [
     answer:
       'All orders are firm and final. Tickets cannot be returned, exchanged or resold. No cancellation or refund will therefore be possible. Tickets remain valid in the event of a change in the match date and time.',
   },
+  {
+    id: uuidv4(),
+    question: 'I bought 2 tickets and I only received one?',
+    answer:
+      "Each ticket has a quantity, that's how many you can print. If you bought 2, you can print 2 copies of the same ticket. DISCAIMER: You can't cheat and print 3 or 4 because that will not be validated during event entry.",
+  },
 ] as const;
 
 function FAQs() {

@@ -1,12 +1,8 @@
 'use server';
 
-import puppeteer, { Browser } from 'puppeteer';
-import puppeteerCore from 'puppeteer-core';
-import chromium from '@sparticuz/chromium-min';
+import puppeteer from 'puppeteer';
 
 export async function getPdfBuffer(html: string) {
-  const executablePath = await chromium.executablePath();
-
   // let browser: any;
   // if (process.env.NEXT_PUBLIC_VERCEL_ENV === 'production')
   //   browser = await puppeteerCore.launch({
