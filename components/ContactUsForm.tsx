@@ -97,15 +97,14 @@ function ContactUsForm() {
 
     // @ts-ignore
     if (state?.data?.id) {
-      // setFirstname('');
-      // setLastname('');
-      // setPhone('');
-      // setEmail('');
-      // setMessage('');
+      setFirstname('');
+      setLastname('');
+      setPhone('');
+      setEmail('');
+      setMessage('');
       toast('✔️ message sent');
-      // @ts-ignore
       state.data.id = '';
-      // setShowModal(false);
+      setShowModal(false);
     }
   }, [firstname, lastname, email, phone, message, state]);
 
