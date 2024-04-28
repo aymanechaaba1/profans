@@ -26,7 +26,7 @@ function EmailTemplate({
       <Head />
       <Tailwind>
         <Body className="bg-slate-100/50 font-sans">
-          <Container className="bg-white shadow-sm">
+          <Container className="bg-white shadow-sm p-5">
             <Section className="py-2">
               <Img src={LOGO_URL} width="100" className="mx-auto" />
             </Section>
