@@ -1,4 +1,3 @@
-import { generateQrCode } from '@/actions/generateQrCode';
 import { formatId } from '@/lib/utils';
 import { formatPrice } from '@/utils/helpers';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';

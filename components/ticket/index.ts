@@ -4,6 +4,15 @@ import { eventOptions, orderItems } from '@/drizzle/schema';
 import { formatId } from '@/lib/utils';
 import { formatPrice } from '@/utils/helpers';
 
+type Payload = {
+  userId: string;
+  orderId: string;
+  ticketId: string;
+  eventOptionId: string;
+  orderItemTime: number;
+  eventId: string;
+};
+
 export const Ticket = async (orderItem: typeof orderItems.$inferSelect) => {
   const data = await db.query.orderItems.findFirst({
     where: (orderItems, { eq, and }) =>
@@ -30,7 +39,7 @@ export const Ticket = async (orderItem: typeof orderItems.$inferSelect) => {
   });
   if (!data) return;
 
-  const qrCodeUrl = await generateQrCode({
+  const qrCodeUrl = await generateQrCode<Payload>({
     userId: data.order.user.id,
     orderId: orderItem.orderId,
     ticketId: orderItem.ticketId,
@@ -56,6 +65,10 @@ export const Ticket = async (orderItem: typeof orderItems.$inferSelect) => {
             <p class="text-xs tracking-tight scroll-m-20">
               <span>orderId:</span>
               <span class="font-semibold">${formatId(orderItem.orderId)}</span>
+            </p>
+            <p class="text-xs tracking-tight scroll-m-20">
+              <span>Quantity:</span>
+              <span class="font-semibold">${orderItem.quantity}</span>
             </p>
             <p class="text-xs text-left tracking-tight scroll-m-20">
               <span>ticketId:</span>

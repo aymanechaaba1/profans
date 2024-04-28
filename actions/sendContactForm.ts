@@ -1,6 +1,6 @@
 'use server';
 
-import EmailTemplate from '@/components/emails/EmailTemplate';
+import ContactUsMessageEmail from '@/components/emails/ContactUsMessageEmail';
 import resend from '@/lib/resend';
 import {
   MESSAGE_MAX_LENGTH,
@@ -28,18 +28,26 @@ export async function sendContactForm(prevState: any, formData: FormData) {
 
   let { firstname, lastname, email, phone, message } = result.data;
 
-  console.log(result.data);
-
+  let emailData: any = {
+    data: null,
+    error: null,
+  };
   try {
-    const data = await resend.emails.send({
+    emailData = await resend.emails.send({
       from: `Profans <onboarding@resend.dev>`, // contact@profans.com
       to: ['aymanechaaba1@gmail.com'],
-      subject: `New Message from ${firstname} ${lastname}`,
-      react: EmailTemplate({ firstname, lastname, email, phone, message }),
+      subject: `New Message from ${firstname} ${lastname} 💌`,
+      react: ContactUsMessageEmail({
+        firstname,
+        lastname,
+        email,
+        phone,
+        message,
+      }),
     });
-
-    return data.data;
   } catch (err) {
-    console.log(err);
+    return undefined;
   }
+
+  return emailData;
 }

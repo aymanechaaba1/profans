@@ -96,15 +96,14 @@ function ContactUsForm() {
     else setValidMessage(false);
 
     // @ts-ignore
-    if (state?.id) {
+    if (state?.data?.id) {
       setFirstname('');
       setLastname('');
       setPhone('');
       setEmail('');
       setMessage('');
-      toast('message sent');
-      // @ts-ignore
-      state.id = '';
+      toast('✔️ message sent');
+      state.data.id = '';
       setShowModal(false);
     }
   }, [firstname, lastname, email, phone, message, state]);

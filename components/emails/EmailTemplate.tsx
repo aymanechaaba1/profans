@@ -1,25 +1,53 @@
+import { APP_URL, LOGO_URL } from '@/utils/config';
+import {
+  Tailwind,
+  Button,
+  Html,
+  Head,
+  Container,
+  Body,
+  Section,
+  Img,
+  Heading,
+  Text,
+  Link,
+} from '@react-email/components';
+import { ReactNode } from 'react';
+
 function EmailTemplate({
-  firstname,
-  lastname,
-  email,
-  phone,
-  message,
+  children,
 }: Readonly<{
-  firstname: string;
-  lastname: string;
-  email: string;
-  phone: string;
-  message: string;
+  children: ReactNode;
 }>) {
+  let today = new Date();
+
   return (
-    <div>
-      <h1 className="tracking-tight font-semibold text-2xl scroll-m-20">
-        {firstname} {lastname}
-      </h1>
-      <p>Email: {email}</p>
-      <p>Phone: {phone}</p>
-      <p>Message: {message}</p>
-    </div>
+    <Html>
+      <Head />
+      <Tailwind>
+        <Body className="bg-slate-100/50 font-sans">
+          <Container className="bg-white shadow-sm p-5">
+            <Section className="py-2">
+              <Img src={LOGO_URL} width="100" className="mx-auto" />
+            </Section>
+            {children}
+            <Section>
+              <Text className="text-[11px] text-center max-w-[400px] mx-auto">
+                <span>
+                  This message was produced and distributed by Profans, Inc.
+                  &#169;
+                  {today.getFullYear()}, All rights reserved. View our
+                </span>
+                <Link href={APP_URL} className="ml-1 underline">
+                  privacy policy
+                </Link>
+                .
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
   );
 }
 

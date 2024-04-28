@@ -1,7 +1,7 @@
 import { orderItems, orders } from '@/drizzle/schema';
 import OrdersTable from './OrdersTable';
 import { TabsContent } from '@radix-ui/react-tabs';
-import { getOrders } from '@/actions/geOrders';
+import { getOrders } from '@/actions/getOrders';
 
 function OrdersTab({
   userOrders,

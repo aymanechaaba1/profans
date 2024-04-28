@@ -31,7 +31,7 @@ import { useFormState, useFormStatus } from 'react-dom';
 import ClaimsTab from './ClaimsTab';
 import { claims, orders } from '@/drizzle/schema';
 import OrdersTab from './OrdersTab';
-import { getOrders } from '@/actions/geOrders';
+import { getOrders } from '@/actions/getOrders';
 
 function AccountTabs({
   userClaims,

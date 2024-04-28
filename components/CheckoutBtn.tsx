@@ -37,7 +37,6 @@ function CheckoutBtn({
   basketItems: (typeof cartItems.$inferSelect)[];
 }) {
   const [state, formAction] = useFormState(createCheckoutSession, null);
-  console.log(tickets);
 
   let lineItems = basketItems.map((item) => {
     let ticket = tickets.find((ticket) => ticket.id === item.ticketId);

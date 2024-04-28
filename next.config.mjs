@@ -14,6 +14,9 @@ const nextConfig = {
       {
         hostname: 'firebasestorage.googleapis.com',
       },
+      {
+        hostname: 'chart.googleapis.com',
+      },
     ],
   },
 };

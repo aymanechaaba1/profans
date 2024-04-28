@@ -1,4 +1,4 @@
-import { getOrders } from '@/actions/geOrders';
+import { getOrders } from '@/actions/getOrders';
 import {
   Table,
   TableBody,

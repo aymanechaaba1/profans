@@ -25,6 +25,11 @@ import { Loader2 } from 'lucide-react';
 import { checkUser } from '@/actions/checkUser';
 import { validateEmail } from '@/actions/validateEmail';
 import { Button } from './ui/button';
+import { sendWelcomeEmail } from '@/actions/sendWelcomeEmail';
+import { generateOTP } from '@/actions/generateOtp';
+import { generateQrCode } from '@/actions/generateQrCode';
+import { verifyOtp } from '@/actions/verifyOtp';
+import { DEFAULT_OTP_TIME } from '@/utils/config';
 
 export type SignUpFormState = {
   ok: boolean;
@@ -100,7 +105,8 @@ function SignUpForm() {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [showResendCodeBtn, setShowResendCodeBtn] = useState(false);
-  const [sentOtp, setSentOtp] = useState('');
+  const [sentOtp, setSentOtp] =
+    useState<Awaited<ReturnType<typeof generateOTP>>>(undefined);
   const [otpCode, setOtpCode] = useState<string>('');
   const [validOtp, setValidOtp] = useState<boolean | undefined>(false);
   const [email, setEmail] = useState('');
@@ -110,7 +116,7 @@ function SignUpForm() {
   const [tries, setTries] = useState(0);
 
   const time = new Date();
-  time.setSeconds(time.getSeconds() + 10);
+  time.setSeconds(time.getSeconds() + DEFAULT_OTP_TIME * 60);
   const { seconds, minutes, isRunning, start, restart } = useTimer({
     expiryTimestamp: time,
     onExpire: () => {},
@@ -118,13 +124,12 @@ function SignUpForm() {
   });
 
   useEffect(() => {
-    time.setSeconds(time.getSeconds() + 60);
-
     getCities().then((data) => setCities(data.results));
-    if (otpCode.length === 6) {
-      if (otpCode === sentOtp) {
+    if (otpCode && otpCode.length === 6 && sentOtp) {
+      verifyOtp(sentOtp.secret.secret, otpCode).then((verificationResult) => {
+        if (!verificationResult) return toast('wrong otp!');
         setValidOtp(true);
-      }
+      });
     }
 
     if (formState) {
@@ -144,12 +149,16 @@ function SignUpForm() {
       const user = await checkUser(email);
       if (user) return toast('user already exists');
 
-      // send otp
-      const sendingResult = await sendOtp(email);
-      if (sendingResult?.messageId) {
-        setSentOtp(sendingResult.otp);
+      // send otp code
+      const otp = await generateOTP();
+      if (!otp) return;
+
+      const url = await generateQrCode<string>(otp.secret.uri);
+
+      setSentOtp(otp);
+      const emailData = await sendOtp(otp.token.token);
+      if (emailData?.id) {
         setShowOTPInput(true);
-        setShowTimer(true);
       }
 
       // start timer
@@ -201,7 +210,7 @@ function SignUpForm() {
             placeholder="name@contact.ma"
           />
           {showOTPInput && !validOtp && (
-            <div className="space-y-2 col-span-2 mx-auto">
+            <div className="space-y-2 col-span-2 mx-auto flex flex-col justify-center items-center">
               <InputOTP
                 maxLength={6}
                 pattern={REGEXP_ONLY_DIGITS}
@@ -224,23 +233,27 @@ function SignUpForm() {
                 </InputOTPGroup>
               </InputOTP>
               <div className="text-xs text-gray-800 dark:text-slate-200 text-center">
-                Enter your one-time password.
+                Enter your one-time password. (valid for only {DEFAULT_OTP_TIME}{' '}
+                minutes)
               </div>
               {showTimer && (
-                <>
-                  <span>didn&apos;t receive the code?</span>
+                <div className="flex items-center">
+                  <span className="text-xs">didn&apos;t receive the code?</span>
                   <button
+                    type="button"
                     disabled={isRunning}
-                    className="font-medium ml-2 mr-4"
+                    className="font-medium ml-2 mr-4 text-xs"
                     onClick={async (e) => {
                       e.preventDefault();
                       // if number of tries is 3, return and show a message of 'you reached max number of tries'
-                      if (tries === 3)
-                        return toast('you reached max number of tries');
 
-                      const newSendingResult = await sendOtp(email);
-                      if (newSendingResult?.messageId)
-                        setSentOtp(newSendingResult.otp);
+                      if (tries === 3 || isRunning) return;
+
+                      const newOtp = await generateOTP();
+                      if (!newOtp) return;
+                      setSentOtp(newOtp);
+
+                      const newEmailData = await sendOtp(newOtp.token.token);
                       setTries((prevTry) => prevTry + 1);
                       new Promise((resolve, reject) => {
                         resolve('timer restarted');
@@ -254,7 +267,7 @@ function SignUpForm() {
                     <span>:</span>
                     <span>{seconds}</span>
                   </span>
-                </>
+                </div>
               )}
             </div>
           )}
@@ -336,7 +349,7 @@ function SignUpForm() {
             <SignupSubmitBtn isRunning={isRunning} />
           </form>
         )}
-        <p className="text-xs col-span-2">
+        <p className="text-xs col-span-2 mt-4">
           <span className="mr-1">already have an account,</span>
           <Link href={'/login'} className="font-bold">
             login!
