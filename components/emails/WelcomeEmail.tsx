@@ -14,7 +14,7 @@ function WelcomeEmail({ user }: { user: typeof users.$inferSelect }) {
         ,
       </Text>
       <Text className="text-center text-xs tracking-tight">
-        MOMENTS YOU DON`&apos;T WANNA MISS 🎉😍
+        MOMENTS YOU DON&apos;T WANNA MISS 🎉😍
       </Text>
       <Button
         href={`${getUrl('/events')}`}
