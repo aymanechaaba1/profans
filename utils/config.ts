@@ -10,4 +10,5 @@ export const MIN_LENGTH_LASTNAME = 3;
 export const LOGO_URL =
   'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/tadakirnet-clone%20logo2.png?alt=media&token=1518680c-5586-4e8f-a44a-d8fb1aadf408';
 export const APP_URL = 'https://tadakirnet-clone.vercel.app';
-export const DEFAULT_OTP_TIME = 10; // in minutes
+export const DEFAULT_OTP_TIME = 1; // in minutes
+export const DEFAULT_RESEND_OTP_TRIES = 3;
