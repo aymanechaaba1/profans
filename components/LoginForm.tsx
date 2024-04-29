@@ -67,6 +67,7 @@ function LoginForm() {
   const [qr, setQr] = useState<string>('');
   const [userId, setUserId] = useState('');
   const [showTimer, setShowTimer] = useState(false);
+  const [email, setEmail] = useState<string>('');
   const router = useRouter();
 
   const time = new Date();
@@ -78,6 +79,7 @@ function LoginForm() {
   });
 
   const { resendCode, setTries, sentOtp, setSentOtp } = useResendCode(
+    email,
     isRunning,
     time,
     restart
@@ -92,6 +94,7 @@ function LoginForm() {
     if (showOtpInput) return;
 
     setUserId(user.id);
+    setEmail(user.email);
 
     // send otp code
     const otp = await generateOTP();
@@ -101,7 +104,7 @@ function LoginForm() {
     const url = await generateQrCode<string>(otp.secret.uri);
     setQr(url);
 
-    const emailData = await sendOtp(otp.token.token);
+    const emailData = await sendOtp(user.email, otp.token.token);
     if (emailData?.id) {
       setShowOtpInput(true);
       setShowTimer(true);

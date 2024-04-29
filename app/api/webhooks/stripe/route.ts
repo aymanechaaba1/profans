@@ -15,6 +15,7 @@ import { getTickets } from '@/actions/getTickets';
 import resend from '@/lib/resend';
 import DownloadTicketsEmail from '@/components/emails/DownloadTicketsEmail';
 import { upperFirst } from '@/utils/helpers';
+import { MAIN_DOMAIN } from '@/utils/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,8 +126,8 @@ export async function POST(req: NextRequest) {
 
         const [emailData, _cartItems] = await Promise.all([
           resend.emails.send({
-            from: 'Profans <onboarding@resend.dev>',
-            to: 'aymanechaaba1@gmail.com',
+            from: `Profans <noreply@${MAIN_DOMAIN}>`,
+            to: user.email,
             subject: `${upperFirst(user.firstname)}, Download your Tickets`,
             react: DownloadTicketsEmail({
               firstname: user.firstname,

@@ -5,6 +5,7 @@ import React, { MouseEvent, useState } from 'react';
 import { toast } from 'sonner';
 
 function useResendCode(
+  to: string,
   isRunning: boolean,
   time: Date,
   restart: (newExpiryTimestamp: Date, autoStart?: boolean | undefined) => void
@@ -25,7 +26,7 @@ function useResendCode(
     if (!newOtp) return;
     setSentOtp(newOtp);
 
-    const newEmailData = await sendOtp(newOtp.token.token);
+    const newEmailData = await sendOtp(to, newOtp.token.token);
     setTries((prevTry) => prevTry + 1);
     new Promise((resolve, reject) => {
       resolve('timer restarted');

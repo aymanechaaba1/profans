@@ -3,6 +3,7 @@
 import ContactUsMessageEmail from '@/components/emails/ContactUsMessageEmail';
 import resend from '@/lib/resend';
 import {
+  MAIN_DOMAIN,
   MESSAGE_MAX_LENGTH,
   MIN_LENGTH_FIRSTNAME,
   MIN_LENGTH_LASTNAME,
@@ -34,7 +35,7 @@ export async function sendContactForm(prevState: any, formData: FormData) {
   };
   try {
     emailData = await resend.emails.send({
-      from: `Profans <onboarding@resend.dev>`, // contact@profans.com
+      from: `Profans <support@${MAIN_DOMAIN}>`, // contact@profans.com
       to: ['aymanechaaba1@gmail.com'],
       subject: `New Message from ${firstname} ${lastname} 💌`,
       react: ContactUsMessageEmail({
