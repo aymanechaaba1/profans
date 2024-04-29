@@ -19,7 +19,6 @@ import db from '@/drizzle';
 import { useRouter } from 'next/navigation';
 import { useFormStatus } from 'react-dom';
 import { Label } from './ui/label';
-import { useTimer } from 'react-timer-hook';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { checkUser } from '@/actions/checkUser';
@@ -30,6 +29,9 @@ import { generateOTP } from '@/actions/generateOtp';
 import { generateQrCode } from '@/actions/generateQrCode';
 import { verifyOtp } from '@/actions/verifyOtp';
 import { DEFAULT_OTP_TIME } from '@/utils/config';
+import OTPTimer from './OTPTimer';
+import { useTimer } from 'react-timer-hook';
+import useResendCode from '@/hooks/useResendCode';
 
 export type SignUpFormState = {
   ok: boolean;
@@ -82,7 +84,7 @@ function SendOtpSubmitBtn() {
   );
 }
 
-function SignupSubmitBtn({ isRunning }: { isRunning?: boolean }) {
+function SignupSubmitBtn() {
   const { pending } = useFormStatus();
 
   return (
@@ -105,16 +107,12 @@ function SignUpForm() {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [showResendCodeBtn, setShowResendCodeBtn] = useState(false);
-  const [sentOtp, setSentOtp] =
-    useState<Awaited<ReturnType<typeof generateOTP>>>(undefined);
   const [otpCode, setOtpCode] = useState<string>('');
   const [validOtp, setValidOtp] = useState<boolean | undefined>(false);
   const [email, setEmail] = useState('');
   const [validEmail, setValidEmail] = useState<boolean | undefined>(undefined);
   const [formState, setFormState] = useState<SignUpFormState>();
   const router = useRouter();
-  const [tries, setTries] = useState(0);
-
   const time = new Date();
   time.setSeconds(time.getSeconds() + DEFAULT_OTP_TIME * 60);
   const { seconds, minutes, isRunning, start, restart } = useTimer({
@@ -122,6 +120,12 @@ function SignUpForm() {
     onExpire: () => {},
     autoStart: false,
   });
+
+  const { resendCode, setTries, sentOtp, setSentOtp } = useResendCode(
+    isRunning,
+    time,
+    restart
+  );
 
   useEffect(() => {
     getCities().then((data) => setCities(data.results));
@@ -136,11 +140,12 @@ function SignUpForm() {
       formState.message && toast(formState.message);
       formState.ok && router.replace('/');
     }
-  }, [formState, otpCode, sentOtp, validOtp, isRunning]);
+  }, [formState, otpCode, sentOtp, validOtp]);
 
   async function emailFormHandler(email: string) {
     const validEmail = await validateEmail(email);
     if (!validEmail) return toast('invalid email');
+    if (showOTPInput) return;
 
     setValidEmail(true);
 
@@ -159,6 +164,7 @@ function SignUpForm() {
       const emailData = await sendOtp(otp.token.token);
       if (emailData?.id) {
         setShowOTPInput(true);
+        setShowTimer(true);
       }
 
       // start timer
@@ -237,41 +243,16 @@ function SignUpForm() {
                 minutes)
               </div>
               {showTimer && (
-                <div className="flex items-center">
-                  <span className="text-xs">didn&apos;t receive the code?</span>
-                  <button
-                    type="button"
-                    disabled={isRunning}
-                    className="font-medium ml-2 mr-4 text-xs"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      // if number of tries is 3, return and show a message of 'you reached max number of tries'
-
-                      if (tries === 3 || isRunning) return;
-
-                      const newOtp = await generateOTP();
-                      if (!newOtp) return;
-                      setSentOtp(newOtp);
-
-                      const newEmailData = await sendOtp(newOtp.token.token);
-                      setTries((prevTry) => prevTry + 1);
-                      new Promise((resolve, reject) => {
-                        resolve('timer restarted');
-                      }).then((val) => restart(time));
-                    }}
-                  >
-                    try again after
-                  </button>
-                  <span className="text-sm">
-                    <span>{minutes}</span>
-                    <span>:</span>
-                    <span>{seconds}</span>
-                  </span>
-                </div>
+                <OTPTimer
+                  isRunning={isRunning}
+                  minutes={minutes}
+                  seconds={seconds}
+                  resendCode={resendCode}
+                />
               )}
             </div>
           )}
-          {!validOtp && <SendOtpSubmitBtn />}
+          {!validOtp && !showOTPInput && <SendOtpSubmitBtn />}
         </form>
         {validOtp && (
           <form
@@ -346,7 +327,7 @@ function SignUpForm() {
               ))}
             </select>
             <PhoneNumberInput state={formState} />
-            <SignupSubmitBtn isRunning={isRunning} />
+            <SignupSubmitBtn />
           </form>
         )}
         <p className="text-xs col-span-2 mt-4">

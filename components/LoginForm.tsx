@@ -3,7 +3,7 @@
 import { cn } from '@/utils/helpers';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -26,6 +26,9 @@ import { generateOTP } from '@/actions/generateOtp';
 import Image from 'next/image';
 import { generateQrCode } from '@/actions/generateQrCode';
 import { DEFAULT_OTP_TIME } from '@/utils/config';
+import { useTimer } from 'react-timer-hook';
+import OTPTimer from './OTPTimer';
+import useResendCode from '@/hooks/useResendCode';
 
 export type LoginFormState = {
   ok: boolean;
@@ -61,12 +64,24 @@ function LoginForm() {
   const [activeTab, setActiveTab] = useState<'email' | 'phone'>('email');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpCode, setOtpCode] = useState('');
-  const [sentOtp, setSentOtp] =
-    useState<Awaited<ReturnType<typeof generateOTP>>>(undefined);
   const [qr, setQr] = useState<string>('');
   const [userId, setUserId] = useState('');
+  const [showTimer, setShowTimer] = useState(false);
   const router = useRouter();
 
+  const time = new Date();
+  time.setSeconds(time.getSeconds() + DEFAULT_OTP_TIME * 60);
+  const { seconds, minutes, isRunning, start, restart } = useTimer({
+    expiryTimestamp: time,
+    onExpire: () => {},
+    autoStart: false,
+  });
+
+  const { resendCode, setTries, sentOtp, setSentOtp } = useResendCode(
+    isRunning,
+    time,
+    restart
+  );
   async function loginWithEmail(formData: FormData) {
     let email = formData.get('email') as string;
     const isValidEmail = await validateEmail(email);
@@ -74,6 +89,7 @@ function LoginForm() {
 
     const user = await checkUser(email);
     if (!user) return toast('no user with that email');
+    if (showOtpInput) return;
 
     setUserId(user.id);
 
@@ -88,7 +104,12 @@ function LoginForm() {
     const emailData = await sendOtp(otp.token.token);
     if (emailData?.id) {
       setShowOtpInput(true);
+      setShowTimer(true);
     }
+
+    // start timer
+    start();
+    setTries((prevTry) => prevTry + 1);
   }
 
   useEffect(() => {
@@ -177,9 +198,17 @@ function LoginForm() {
                   Enter your one-time password. (valid for only{' '}
                   {DEFAULT_OTP_TIME} minutes)
                 </p>
+                {showTimer && (
+                  <OTPTimer
+                    isRunning={isRunning}
+                    minutes={minutes}
+                    seconds={seconds}
+                    resendCode={resendCode}
+                  />
+                )}
               </div>
             )}
-            <LoginSubmitButton />
+            {!showOtpInput && <LoginSubmitButton />}
           </form>
         </TabsContent>
         <TabsContent value="phone">
