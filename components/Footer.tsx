@@ -27,6 +27,7 @@ import { SiShadcnui, SiFifa } from 'react-icons/si';
 import { IoLogoVercel } from 'react-icons/io5';
 import { CgAdidas } from 'react-icons/cg';
 import ContactUsForm from './ContactUsForm';
+import { LOGO_URL } from '@/utils/config';
 
 type Social = {
   icon: JSX.Element;
@@ -63,7 +64,7 @@ function Footer() {
       <div className="flex items-start justify-between">
         <div>
           <Image
-            src={`https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/tadakirnet-clone%20logo2.png?alt=media&token=1518680c-5586-4e8f-a44a-d8fb1aadf408`}
+            src={LOGO_URL}
             height={100}
             width={100}
             alt="logo"

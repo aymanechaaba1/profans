@@ -122,6 +122,7 @@ function SignUpForm() {
   });
 
   const { resendCode, setTries, sentOtp, setSentOtp } = useResendCode(
+    email,
     isRunning,
     time,
     restart
@@ -161,7 +162,7 @@ function SignUpForm() {
       const url = await generateQrCode<string>(otp.secret.uri);
 
       setSentOtp(otp);
-      const emailData = await sendOtp(otp.token.token);
+      const emailData = await sendOtp(email, otp.token.token);
       if (emailData?.id) {
         setShowOTPInput(true);
         setShowTimer(true);

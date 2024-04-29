@@ -1,7 +1,7 @@
 import { MoroccanCitiesResponse } from '@/types/moroccan-cities';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { MODE } from './config';
+import { APP_URL, MODE } from './config';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -57,10 +57,7 @@ export const formatPrice = (price: number, currency: string = 'USD') =>
   }).format(price);
 
 export const getUrl = (path: string = '/') => {
-  let url =
-    MODE === 'dev'
-      ? `http://localhost:3000`
-      : 'https://tadakirnet-clone.vercel.app';
+  let url = MODE === 'dev' ? `http://localhost:3000` : APP_URL;
   url += path;
   return url;
 };

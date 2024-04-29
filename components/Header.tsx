@@ -19,6 +19,7 @@ import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import SwitchMode from './SwitchMode';
 import { Button } from './ui/button';
+import { LOGO_URL } from '@/utils/config';
 
 async function Header({ user }: { user: Awaited<ReturnType<typeof getUser>> }) {
   return (
@@ -27,7 +28,7 @@ async function Header({ user }: { user: Awaited<ReturnType<typeof getUser>> }) {
         {/* logo */}
         <Link href={'/'}>
           <Image
-            src={`https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/tadakirnet-clone%20logo2.png?alt=media&token=1518680c-5586-4e8f-a44a-d8fb1aadf408`}
+            src={LOGO_URL}
             height={100}
             width={100}
             alt="logo"

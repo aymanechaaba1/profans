@@ -86,8 +86,6 @@ export const getCartTotal = async () => {
   return total.total;
 };
 
-export const getURL = (path: string = '') => {};
-
 export const createOrderId = (orderId: string) =>
   orderId
     .split('-')
