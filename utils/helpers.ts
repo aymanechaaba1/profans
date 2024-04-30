@@ -64,3 +64,24 @@ export const getUrl = (path: string = '/') => {
 
 export const upperFirst = (word: string) =>
   word[0].toUpperCase().concat(word.slice(1));
+
+export function htmlToBuffer(html: string) {
+  let blob = new Blob([html], { type: 'text/html' });
+
+  let reader = new FileReader();
+  let buffer: string | ArrayBuffer | null | undefined;
+
+  reader.onload = function (event) {
+    buffer = event?.target?.result;
+  };
+  reader.readAsArrayBuffer(blob);
+
+  return buffer;
+}
+
+export function sum(a: number, b: number) {
+  return a + b;
+}
+
+export const getPath = (userId: string, orderId: string, ticketId: string) =>
+  `/orders/${userId}/${orderId}_${ticketId}`;

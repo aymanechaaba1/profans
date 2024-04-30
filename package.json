@@ -13,11 +13,14 @@
     "db:seed": "node -r esbuild-register drizzle/seed.ts",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
-    "email": "email dev --dir components/emails"
+    "email": "email dev --dir components/emails",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
     "@clerk/nextjs": "^4.29.9",
+    "@hugocxl/react-to-image": "^0.0.9",
     "@neondatabase/serverless": "^0.9.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -87,7 +90,10 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^15.0.5",
     "@types/html-pdf": "^3.0.3",
+    "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.14",
@@ -96,12 +102,18 @@
     "@types/react-dom": "^18",
     "@types/react-timeago": "^4.1.7",
     "@types/speakeasy": "^2.0.10",
+    "@types/text-encoding": "^0.0.39",
     "autoprefixer": "^10.0.1",
     "drizzle-kit": "^0.20.17",
     "eslint": "^8",
     "eslint-config-next": "14.1.4",
+    "eslint-plugin-jest-dom": "^5.4.0",
+    "eslint-plugin-testing-library": "^6.2.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
+    "text-encoding": "^0.7.0",
     "typescript": "^5",
     "vitest": "^1.5.2"
   }

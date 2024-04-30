@@ -1,21 +1,28 @@
 import { metadata } from './../../../login/page';
 import db from '@/drizzle';
-import { cart, cartItems, orderItems, orders, tickets } from '@/drizzle/schema';
+import {
+  cart,
+  cartItems,
+  orderItems,
+  orders,
+  tickets,
+  users,
+} from '@/drizzle/schema';
 import stripe from '@/lib/stripe';
 import { eq } from 'drizzle-orm';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { headers } from 'next/headers';
 import { type NextRequest, NextResponse } from 'next/server';
 import { Ticket } from '@/components/ticket';
-import { getPdfBuffer } from '@/actions/getPdfBuffer';
-import { uploadPdfToFirebase } from '@/actions/uploadPdfToFirebase';
 import { StorageReference, getDownloadURL, ref } from 'firebase/storage';
 import type Stripe from 'stripe';
 import { getTickets } from '@/actions/getTickets';
 import resend from '@/lib/resend';
 import DownloadTicketsEmail from '@/components/emails/DownloadTicketsEmail';
-import { upperFirst } from '@/utils/helpers';
+import { getPath, htmlToBuffer, upperFirst } from '@/utils/helpers';
 import { MAIN_DOMAIN } from '@/utils/config';
+import { generateQrCode } from '@/actions/generateQrCode';
+import { uploadFileToFirebase } from '@/actions/uploadFileToFirebase';
 
 export const dynamic = 'force-dynamic';
 
@@ -81,7 +88,8 @@ export async function POST(req: NextRequest) {
         ]);
         if (!newOrder) return;
 
-        let items: (typeof orderItems.$inferSelect)[] = [];
+        type OrderItem = typeof orderItems.$inferSelect;
+        let items: OrderItem[] = [];
         for (const [i, lineItem] of lineItems.data.entries()) {
           let item = await db
             .insert(orderItems)
@@ -95,15 +103,14 @@ export async function POST(req: NextRequest) {
             })
             .returning();
 
-          let ticket = await Ticket(item[0]);
-          if (!ticket) return;
+          let path = getPath(user.id, items[0].orderId, item[0].ticketId);
 
-          let path = `/tickets/${user.id}/${item[0].orderId}_${item[0].ticketId}.pdf`;
+          let qrUrl = await generateQrCode<OrderItem>(item[0]);
 
-          let pdfBuffer = await getPdfBuffer(ticket);
-          let snapshot = await uploadPdfToFirebase({
+          let snapshot = await uploadFileToFirebase({
             path,
-            pdfBuffer,
+            url: qrUrl,
+            format: 'data_url',
           });
           let url = await getDownloadURL(snapshot.ref);
           urls.push(url);
@@ -141,11 +148,12 @@ export async function POST(req: NextRequest) {
             .where(eq(cartItems.cartId, user.cart.id))
             .returning(),
         ]);
-
-        revalidatePath('/', 'layout');
       } catch (err) {
         console.log(err);
       }
+
+      revalidatePath('/cart');
+      revalidatePath('/', 'layout');
 
     default:
       console.log(`Unhandled event type ${event.type}`);
