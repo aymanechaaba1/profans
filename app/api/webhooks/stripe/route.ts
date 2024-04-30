@@ -103,7 +103,8 @@ export async function POST(req: NextRequest) {
             })
             .returning();
 
-          let path = getPath(user.id, items[0].orderId, item[0].ticketId);
+          let path = `/orders/${user.id}/${item[0].orderId}_${item[0].ticketId}`;
+          // let path = getPath(user.id, item[0].orderId, item[0].ticketId);
 
           let qrUrl = await generateQrCode<OrderItem>(item[0]);
 
