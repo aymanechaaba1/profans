@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import useSession from '@/hooks/useSession';
 
 function QuantityUnitPriceSubTotal({
   quantity,
@@ -30,6 +31,7 @@ function QuantityUnitPriceSubTotal({
   const [qty, setQty] = useState<number>(quantity);
   const [price, setPrice] = useState<number>(unitPrice);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const session = useSession();
 
   const [boughtTickets, setBoughtTickets] = useState<number>(0);
   const [ticketsLeftToBuy, setTicketsLeftToBuy] = useState<number>(0);
@@ -37,7 +39,11 @@ function QuantityUnitPriceSubTotal({
   useEffect(() => {
     getCartItemById(cartItemId)
       .then((cartItem) => {
-        return cartItem?.ticketId && getSumOrderItems(cartItem?.ticketId);
+        return (
+          cartItem?.ticketId &&
+          session.user &&
+          getSumOrderItems(session.user.id, cartItem?.ticketId)
+        );
       })
       .then((sum) => {
         setBoughtTickets(Number(sum || 0));

@@ -57,7 +57,10 @@ export const formatPrice = (price: number, currency: string = 'USD') =>
   }).format(price);
 
 export const getUrl = (path: string = '/') => {
-  let url = MODE === 'dev' ? `http://localhost:3000` : APP_URL;
+  let url =
+    process.env.NEXT_PUBLIC_VERCEL_ENV === 'development'
+      ? `http://localhost:3000`
+      : APP_URL;
   url += path;
   return url;
 };
