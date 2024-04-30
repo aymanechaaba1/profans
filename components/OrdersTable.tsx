@@ -33,6 +33,7 @@ import {
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import TicketPreview from './TicketPreview';
 
 function OrdersTable({
   userOrders,
@@ -57,7 +58,7 @@ function OrdersTable({
           <TableHead className="">Quantity</TableHead>
           <TableHead className="">Unit Price</TableHead>
           <TableHead className="">Total</TableHead>
-          <TableHead className="text-right">QR</TableHead>
+          <TableHead className="text-right">Ticket</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -109,15 +110,7 @@ function OrdersTable({
                       {loading ? (
                         <Loader2 className="animate-spin" />
                       ) : (
-                        qrUrl && (
-                          <Image
-                            src={qrUrl}
-                            width={100}
-                            height={100}
-                            alt="qr"
-                            className="object-cover w-full"
-                          />
-                        )
+                        qrUrl && <TicketPreview order={order} qrUrl={qrUrl} />
                       )}
                     </div>
                   </DialogContent>
