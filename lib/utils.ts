@@ -93,4 +93,7 @@ export const createOrderId = (orderId: string) =>
     .join('');
 
 export const formatId = (id: string, startString: string = '') =>
-  id.slice(0, 4).padEnd(10, '*');
+  id
+    .split('-')
+    .map((code, i, arr) => code[0])
+    .join('');
