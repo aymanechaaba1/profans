@@ -65,7 +65,6 @@ function BuyTicketDialog({
   const [expiredEvent, setExpiredEvent] = useState<boolean | undefined>(
     undefined
   );
-  const [minPrice, setMinPrice] = useState<number>(0);
 
   const { user } = useSession();
   const router = useRouter();
@@ -131,9 +130,9 @@ function BuyTicketDialog({
       else if (quantity > ticket.stock) return toast('not enough tickets');
 
       let reachedLimit = false;
-
-      const orderItemsQty = Number((await getSumOrderItems(ticket.id)) || 0);
-      console.log(orderItemsQty);
+      const orderItemsQty = Number(
+        (await getSumOrderItems(user.id, ticket.id)) || 0
+      );
       if (orderItemsQty + quantity > TICKETS_LIMIT) {
         reachedLimit = true;
       }
