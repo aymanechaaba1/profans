@@ -94,6 +94,9 @@ function OrdersTable({
                           .then((url) => {
                             setQrUrl(url);
                           })
+                          .catch((err) => {
+                            console.error(err);
+                          })
                           .finally(() => {
                             setLoading(false);
                           });
@@ -106,13 +109,15 @@ function OrdersTable({
                       {loading ? (
                         <Loader2 className="animate-spin" />
                       ) : (
-                        <Image
-                          src={qrUrl}
-                          width={100}
-                          height={100}
-                          alt="qr"
-                          className="object-cover w-full"
-                        />
+                        qrUrl && (
+                          <Image
+                            src={qrUrl}
+                            width={100}
+                            height={100}
+                            alt="qr"
+                            className="object-cover w-full"
+                          />
+                        )
                       )}
                     </div>
                   </DialogContent>
