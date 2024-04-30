@@ -50,12 +50,12 @@ function DownloadTicketsEmail({
       </Section>
       <Section className="">
         {urls?.map((url, i) => (
-          <>
+          <div key={i}>
             <Hr />
-            <Link className="text-[10px] mt-2 block" key={i} href={url}>
+            <Link className="text-[10px] mt-2 block" href={url}>
               <span>{url}</span>
             </Link>
-          </>
+          </div>
         ))}
         <Text className="text-center">{message}</Text>
       </Section>

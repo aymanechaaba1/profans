@@ -1,6 +1,6 @@
 'use server';
 
-import { alg, key } from '@/utils/config';
+import { alg } from '@/utils/config';
 import { SignJWT } from 'jose';
 
 export async function signJWT(id: string) {

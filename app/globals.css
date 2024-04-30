@@ -135,4 +135,12 @@
   .profans-link {
     @apply transition-colors hover:text-foreground/80 text-foreground/60 tracking-tight scroll-m-20;
   }
+
+  .shimmer {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent;
+  }
+
+  .skeleton {
+    @apply bg-gray-200 dark:bg-gray-900 shimmer;
+  }
 }
