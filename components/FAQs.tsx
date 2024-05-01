@@ -27,7 +27,7 @@ const faqs: FAQ[] = [
     id: uuidv4(),
     question: 'How do I print and view my tickets?',
     answer:
-      'An email will be sent right after you purchase your tickets, all of them individually as pdfs so you can view and print them. They are also available on your orders history.',
+      'Every ticket will be available on your orders history, you can take a screenshot and print them if you want.',
   },
   {
     id: uuidv4(),
