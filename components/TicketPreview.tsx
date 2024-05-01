@@ -58,6 +58,9 @@ function TicketPreview({
         alt="qr"
         className="object-cover w-full"
       />
+      <p className="text-center font-semibold tracking-tight text-sm font-mono">
+        TAKE A SCREENSHOT
+      </p>
     </div>
   );
 }
