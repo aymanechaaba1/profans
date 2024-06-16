@@ -18,6 +18,7 @@ import useSession from '@/hooks/useSession';
 import { Separator } from './ui/separator';
 import { getSession } from '@/actions/getSession';
 import QuantityPicker from './cart/QuantityPicker';
+import { getUser } from '@/lib/utils';
 
 async function QuantityUnitPriceSubTotal({
   quantity,
@@ -59,13 +60,13 @@ async function QuantityUnitPriceSubTotal({
   // }
   // }, [qty]);
 
-  let session = await getSession();
+  let user = await getUser();
 
   let cartItem = await getCartItemById(cartItemId);
   let boughtTickets: number = 0;
   let ticketsLeftToBuy: number = 0;
-  if (cartItem?.ticketId && session?.id) {
-    let sum = await getSumOrderItems(session?.id, cartItem.ticketId);
+  if (cartItem?.ticketId && user?.id) {
+    let sum = await getSumOrderItems(user.id, cartItem.ticketId);
     boughtTickets = Number(sum || 0);
     ticketsLeftToBuy = TICKETS_LIMIT - Number(sum || 0);
   }
