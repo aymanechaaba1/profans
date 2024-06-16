@@ -9,6 +9,7 @@ import { getSumOrderItems } from './getSumOrderItems';
 import { getSession } from './getSession';
 import { getCartItemById } from './getCartItemById';
 import { deleteCartItem } from './deleteCartItem';
+import { getUser } from '@/lib/utils';
 
 export async function updateCartQuantity(
   cartItemId: string,
@@ -40,8 +41,8 @@ export async function updateCartQuantity(
         };
     }
 
-    let session = await getSession();
-    if (!session?.id)
+    let user = await getUser();
+    if (!user)
       return {
         success: false,
         message: 'session not found',
@@ -54,7 +55,7 @@ export async function updateCartQuantity(
         message: 'cart item not found',
       };
 
-    let sum = await getSumOrderItems(session?.id, cartItem.ticketId);
+    let sum = await getSumOrderItems(user.id, cartItem.ticketId);
     let ticketsLeftToBuy = TICKETS_LIMIT - Number(sum || 0);
 
     if (
