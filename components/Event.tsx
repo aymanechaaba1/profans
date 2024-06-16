@@ -35,7 +35,9 @@ async function Event({
           <div className="flex items-start justify-between">
             <div className="mb-3 space-y-2">
               <CardTitle className="">{event.name}</CardTitle>
-              <CardDescription>{event.description}</CardDescription>
+              <CardDescription className="line-clamp-3">
+                {event.description}
+              </CardDescription>
             </div>
             <Link prefetch={false} href={`/events/${event.id}`}>
               <Send size={18} />

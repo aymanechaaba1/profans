@@ -7,12 +7,13 @@ async function main() {
   console.log('seeding starts');
 
   let event: typeof events.$inferInsert = {
-    name: 'Real Madrid vs Bayern Munich',
-    description: 'UEFA Champions League Semi-Finals Leg 1 of 2',
-    time: new Date(1714503600000),
-    location: 'Allianz Arena',
+    name: 'Nicki Minaj Mawazine 2024',
+    description:
+      "Nicki Minaj has risen to the rank of “Queen of rap” in less than eight years of career. She has sold more than 150 million records worldwide. She is the most followed male and female rapper in the world on social networks with 228 million subscribers on Instagram as of December 2023. Her fifth album, Pink Friday 2, was released on December 8, 2023. Time named her one of the 100 most influential people in the world. In April 2017, Nicki Minaj became the highest-charting female artist in the history of the Billboard Hot 100 surpassing Aretha Franklin's previous record (73). To date, she has 123 songs ranked on the Hot 100, making her the fourth artist with the most entries on the chart. She also has four American Music Awards, eight BET Awards, two MTV Music Awards, two MTV Europe Music Awards and five Billboard Music Awards.",
+    time: new Date(1719614700000),
+    location: 'OLM Souissi',
     thumbnail:
-      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2FGLZe_OKb0AArs92.jpeg?alt=media&token=53ea961d-58a8-4c59-a939-416727cc0bba',
+      'https://firebasestorage.googleapis.com/v0/b/tadakirnet-clone-ae832.appspot.com/o/thumbnails%2Ffestival-mawazine-2024-nicki-minaj-1.jpeg?alt=media&token=371951fa-4b46-4761-925f-81e3094e3b21',
   };
 
   try {
@@ -20,18 +21,8 @@ async function main() {
 
     let options: (typeof eventOptions.$inferInsert)[] = [
       {
-        name: 'basic',
-        price: '75',
-        eventId: newEvent[0].id,
-      },
-      {
-        name: 'vip premium players zone',
-        price: '129',
-        eventId: newEvent[0].id,
-      },
-      {
-        name: 'vip premium honor zone',
-        price: '175',
+        name: 'TICKET',
+        price: '140',
         eventId: newEvent[0].id,
       },
     ];

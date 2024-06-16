@@ -6,6 +6,7 @@ import db from '@/drizzle';
 import { Trash2 } from 'lucide-react';
 import { deleteCartItem } from '@/actions/deleteCartItem';
 import { eq } from 'drizzle-orm';
+import { Separator } from './ui/separator';
 
 async function CartItem({
   cartItem,
@@ -58,14 +59,14 @@ async function CartItem({
             <h3 className="scroll-m-20 tracking-tight font-semibold text-xl">
               {event[0].eventName}
             </h3>
-            <CardDescription className="">
+            <CardDescription className="line-clamp-3">
               {event[0].eventDescription}
             </CardDescription>
           </div>
           {/* option selected */}
           <div className="flex items-center gap-x-5 mb-3">
             <p className="font-medium text-sm tracking-tight">
-              selected option:
+              Selected Option:
             </p>
             <p className="text-sm tracking-tight">
               {event[0].option?.toUpperCase()}
