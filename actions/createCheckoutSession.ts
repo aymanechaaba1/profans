@@ -23,7 +23,7 @@ export async function createCheckoutSession(
     mode: 'payment',
     customer_email: user.email,
     success_url: getUrl('/account'),
-    cancel_url: getUrl('/cart'),
+    cancel_url: `http:localhost:3000/cart`,
     metadata: {
       ...(user && { userId: user.id }),
     },

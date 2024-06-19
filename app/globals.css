@@ -66,6 +66,10 @@
   }
 }
 
+.circle {
+  clip-path: circle(40%);
+}
+
 @layer base {
   * {
     @apply border-border;

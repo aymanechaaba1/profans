@@ -31,11 +31,11 @@ import { getTicket } from '@/actions/getTicket';
 import useSession from '@/hooks/useSession';
 import { getCartItemByTicketId } from '@/actions/getCartItemByTicketId';
 import { getSumOrderItems } from '@/actions/getSumOrderItems';
-import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { cartItems } from '@/drizzle/schema';
 import { addCartItem } from '@/actions/addCartItem';
 import { useRouter } from 'next/navigation';
 import { getMinPrice } from '@/actions/getMinPrice';
+import { updateCartQuantity } from '@/actions/updateCartQuantity';
 
 function BuyTicketDialog({
   event,
@@ -145,12 +145,12 @@ function BuyTicketDialog({
         );
 
       let inTheCart = user.cart.items.find(
-        (item) => item.ticketId === ticket.id
+        (item: typeof cartItems.$inferSelect) => item.ticketId === ticket.id
       );
 
       if (inTheCart) {
         // just update quantity
-        updateCartQuantity(quantity, inTheCart.id).then(
+        updateCartQuantity(inTheCart.id, undefined, quantity).then(
           ({ success, message }) => {
             if (message) toast(message);
             if (success) setShowDialog(false);

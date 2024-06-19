@@ -7,6 +7,8 @@ import { getUpcomingEvents } from '@/actions/getUpcomingEvents';
 import { getMinPrice } from '@/actions/getMinPrice';
 import BuyTicketDialog from './BuyTicketDialog';
 import EventTimer from './EventTimer';
+import Dialog from './Dialog';
+import DialogMap from './DialogMap';
 
 async function Event({
   event,
@@ -35,16 +37,15 @@ async function Event({
           <div className="flex items-start justify-between">
             <div className="mb-3 space-y-2">
               <CardTitle className="">{event.name}</CardTitle>
-              <CardDescription>{event.description}</CardDescription>
+              <CardDescription className="line-clamp-3">
+                {event.description}
+              </CardDescription>
             </div>
             <Link prefetch={false} href={`/events/${event.id}`}>
               <Send size={18} />
             </Link>
           </div>
-          <div className="flex items-center gap-x-2">
-            <MapPin size={13} />
-            <p className="text-sm">{event.location}</p>
-          </div>
+          <DialogMap eventLocation={event.location} />
         </div>
         <div className="flex items-center gap-x-2">
           <Clock size={13} />

@@ -35,7 +35,7 @@ export async function getCities() {
 
 export async function getUser() {
   const session = await getSession();
-  let user;
+  let user: any;
 
   if (session && session.id)
     user = await db.query.users.findFirst({

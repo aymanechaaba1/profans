@@ -1,10 +1,7 @@
-'use client';
-
 import { CircleHelp, Loader2, Minus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Input } from './ui/input';
 import { formatPrice } from '@/utils/helpers';
-import { updateCartQuantity } from '@/actions/updateCartQuantity';
 import { toast } from 'sonner';
 import { TICKETS_LIMIT } from '@/utils/config';
 import { getSumOrderItems } from '@/actions/getSumOrderItems';
@@ -18,8 +15,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import useSession from '@/hooks/useSession';
+import { Separator } from './ui/separator';
+import { getSession } from '@/actions/getSession';
+import QuantityPicker from './cart/QuantityPicker';
+import { getUser } from '@/lib/utils';
 
-function QuantityUnitPriceSubTotal({
+async function QuantityUnitPriceSubTotal({
   quantity,
   unitPrice,
   cartItemId,
@@ -28,88 +29,91 @@ function QuantityUnitPriceSubTotal({
   unitPrice: number;
   cartItemId: string;
 }) {
-  const [qty, setQty] = useState<number>(quantity);
-  const [price, setPrice] = useState<number>(unitPrice);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const session = useSession();
+  // const [price, setPrice] = useState<number>(unitPrice);
+  // // const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const session = useSession();
 
-  const [boughtTickets, setBoughtTickets] = useState<number>(0);
-  const [ticketsLeftToBuy, setTicketsLeftToBuy] = useState<number>(0);
+  // const [boughtTickets, setBoughtTickets] = useState<number>(0);
+  // const [ticketsLeftToBuy, setTicketsLeftToBuy] = useState<number>(0);
 
-  useEffect(() => {
-    getCartItemById(cartItemId)
-      .then((cartItem) => {
-        return (
-          cartItem?.ticketId &&
-          session.user &&
-          getSumOrderItems(session.user.id, cartItem?.ticketId)
-        );
-      })
-      .then((sum) => {
-        setBoughtTickets(Number(sum || 0));
-        setTicketsLeftToBuy(TICKETS_LIMIT - Number(sum || 0));
-      })
-      .catch((err) => {
-        toast('something went wrong!');
-      });
+  // useEffect(() => {
+  //   getCartItemById(cartItemId)
+  //     .then((cartItem) => {
+  //       return (
+  //         cartItem?.ticketId &&
+  //         session.user &&
+  //         getSumOrderItems(session.user.id, cartItem?.ticketId)
+  //       );
+  //     })
+  //     .then((sum) => {
+  //       setBoughtTickets(Number(sum || 0));
+  //       setTicketsLeftToBuy(TICKETS_LIMIT - Number(sum || 0));
+  //     })
+  //     .catch((err) => {
+  //       toast('something went wrong!');
+  //     });
 
-    if (qty >= 1 && qty <= TICKETS_LIMIT && qty <= ticketsLeftToBuy) {
-      setIsLoading(true);
-      updateCartQuantity(qty, cartItemId)
-        .then(({ success, message }) => {
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          setIsLoading(false);
-        });
-    }
-  }, [qty]);
+  // if (qty >= 1 && qty <= TICKETS_LIMIT && qty <= ticketsLeftToBuy) {
+  //   updateCartQuantity(qty, cartItemId)
+  //     .then(({ success, message }) => {})
+  //     .catch((err) => {});
+  // }
+  // }, [qty]);
+
+  let user = await getUser();
+
+  let cartItem = await getCartItemById(cartItemId);
+  let boughtTickets: number = 0;
+  let ticketsLeftToBuy: number = 0;
+  if (cartItem?.ticketId && user?.id) {
+    let sum = await getSumOrderItems(user.id, cartItem.ticketId);
+    boughtTickets = Number(sum || 0);
+    ticketsLeftToBuy = TICKETS_LIMIT - Number(sum || 0);
+  }
+
+  // function increment() {
+  //   setQty((prev) => prev + 1);
+  // }
+
+  // function decrement() {
+  //   if (qty > 0) setQty((prev) => prev - 1);
+  // }
 
   return (
-    <div>
+    <>
       <div>
-        <div className="flex items-center gap-x-3">
-          quantity{' '}
-          <span className="text-xs text-red-500">
-            (you bought {boughtTickets}, {ticketsLeftToBuy} left)
-          </span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <CircleHelp size={10} />
-              </TooltipTrigger>
-              <TooltipContent>
-                <small className="text-xs">
-                  max number of tickets to buy is 3
-                </small>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div className="flex-items-center-gap-x-3">
-          {!isLoading ? (
-            <Input
-              type="number"
-              className="mt-3"
-              value={qty}
-              min={1}
-              max={ticketsLeftToBuy}
-              onChange={(e) => {
-                setQty(+e.target.value);
-              }}
+        <Separator className="mb-3" />
+        <div className="space-y-2">
+          <div className="flex items-center gap-x-3">
+            Quantity{' '}
+            <span className="text-xs text-red-500">
+              (You bought {boughtTickets}, {ticketsLeftToBuy} left)
+            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <CircleHelp size={10} />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <small className="text-xs">
+                    max number of tickets to buy
+                  </small>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="">
+            <QuantityPicker
+              cartItemId={cartItemId}
+              unitPrice={unitPrice}
+              quantity={quantity}
+              ticketsLeftToBuy={ticketsLeftToBuy}
             />
-          ) : (
-            <Loader2 size={18} className="animate-spin mt-2" />
-          )}
+          </div>
         </div>
+        <Separator className="" />
       </div>
-      <div className="grid grid-cols-2 mt-5">
-        <small className="small">unit price</small>
-        <p className="text-right font-semibold">{formatPrice(price)}</p>
-        <small className="small">subtotal</small>
-        <p className="text-right font-semibold">{formatPrice(price * qty)}</p>
-      </div>
-    </div>
+    </>
   );
 }
 
