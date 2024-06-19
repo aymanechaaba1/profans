@@ -20,6 +20,9 @@ import { Switch } from './ui/switch';
 import SwitchMode from './SwitchMode';
 import { Button } from './ui/button';
 import { LOGO_URL } from '@/utils/config';
+import CustomSheet from './CustomSheet';
+import { RiMenu4Line } from 'react-icons/ri';
+import NavSheet from './NavSheet';
 
 async function Header({ user }: { user: Awaited<ReturnType<typeof getUser>> }) {
   return (
@@ -36,14 +39,7 @@ async function Header({ user }: { user: Awaited<ReturnType<typeof getUser>> }) {
           />
         </Link>
         {/* links */}
-        <nav className="flex-1 flex items-center gap-4 text-sm lg:gap-6">
-          <Link
-            href={'/events'}
-            className="transition-colors hover:text-foreground/80 text-foreground/60 tracking-tight scroll-m-20"
-          >
-            events
-          </Link>
-        </nav>
+        <NavSheet />
 
         {/* login and signup btns if user is not logged in */}
         {/* else display avatar */}
